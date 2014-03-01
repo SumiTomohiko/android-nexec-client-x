@@ -27,3 +27,9 @@ proguard/
 *.ipr
 *.iws
 .idea/
+
+/ic_launcher-web.png
+/res/drawable-hdpi/ic_launcher.png
+/res/drawable-mdpi/ic_launcher.png
+/res/drawable-xhdpi/ic_launcher.png
+/res/drawable-xxhdpi/ic_launcher.png
