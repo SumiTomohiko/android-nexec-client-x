@@ -1,5 +1,4 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_new_session"
         android:title="@string/action_new_session"/>
@@ -9,5 +8,4 @@
     <item
         android:id="@+id/action_about_this_app"
         android:title="@string/action_about_this_app"/>
-
 </menu>
