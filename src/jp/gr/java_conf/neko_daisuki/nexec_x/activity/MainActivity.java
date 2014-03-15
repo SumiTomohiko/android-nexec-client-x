@@ -23,6 +23,7 @@ import android.widget.Toast;
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.share.SessionId;
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecClient;
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecHost;
+import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecUtil;
 import jp.gr.java_conf.neko_daisuki.nexec_x.R;
 import jp.gr.java_conf.neko_daisuki.nexec_x.widget.XView;
 
@@ -59,7 +60,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void run(int requestCode, int resultCode, Intent data) {
-            writeHost(NexecClient.Util.getHost(data));
+            writeHost(NexecUtil.getHost(data));
         }
     }
 
@@ -75,7 +76,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void run() {
-                mSessionId = NexecClient.Util.getSessionId(mData);
+                mSessionId = NexecUtil.getSessionId(mData);
                 mNexecClient.execute(mSessionId);
             }
         }
@@ -115,10 +116,9 @@ public class MainActivity extends Activity {
         @Override
         public void run(MenuItem item) {
             int requestCode = REQUEST_HOST_PREFERENCE;
-            NexecClient.Util.startHostPreferenceActivity(MainActivity.this,
-                                                         requestCode,
-                                                         mHost.getHost(),
-                                                         mHost.getPort());
+            NexecUtil.startHostPreferenceActivity(MainActivity.this,
+                                                  requestCode, mHost.getHost(),
+                                                  mHost.getPort());
         }
     }
 
@@ -296,7 +296,7 @@ public class MainActivity extends Activity {
 
     private void writeHost(String path, NexecHost host) {
         try {
-            NexecClient.Util.writeHostToJson(path, host);
+            NexecUtil.writeHostToJson(path, host);
         }
         catch (IOException e) {
             handleException("Cannot write host information", e);
@@ -305,7 +305,7 @@ public class MainActivity extends Activity {
 
     private NexecHost readHost(String path) {
         try {
-            return NexecClient.Util.readHostFromJson(path);
+            return NexecUtil.readHostFromJson(path);
         }
         catch (FileNotFoundException e) {
             return new NexecHost(DEFAULT_HOST);
