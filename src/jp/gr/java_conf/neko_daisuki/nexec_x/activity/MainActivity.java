@@ -243,8 +243,9 @@ public class MainActivity extends Activity {
     }
 
     private void handleException(String msg, Throwable e) {
+        e.printStackTrace();
+
         String s = String.format("%s: %s", msg, e.getMessage());
         Toast.makeText(this, s, Toast.LENGTH_LONG).show();
-        e.printStackTrace();
     }
 }
