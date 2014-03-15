@@ -1,6 +1,7 @@
 package jp.gr.java_conf.neko_daisuki.nexec_x.activity;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +14,7 @@ import java.io.Reader;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,6 +53,14 @@ public class MainActivity extends Activity {
         public static final ResultProc NOP = new Nop();
 
         public void run(int requestCode, int resultCode, Intent data);
+    }
+
+    private class HostPreferenceResultProc implements ResultProc {
+
+        @Override
+        public void run(int requestCode, int resultCode, Intent data) {
+            writeHost(NexecClient.Util.getHost(data));
+        }
     }
 
     private class ConfirmResultProc implements ResultProc {
@@ -100,6 +110,18 @@ public class MainActivity extends Activity {
         public void run(MenuItem item);
     }
 
+    private class HostPreferenceMenuProc implements MenuProc {
+
+        @Override
+        public void run(MenuItem item) {
+            int requestCode = REQUEST_HOST_PREFERENCE;
+            NexecClient.Util.startHostPreferenceActivity(MainActivity.this,
+                                                         requestCode,
+                                                         mHost.getHost(),
+                                                         mHost.getPort());
+        }
+    }
+
     private class NewSessionMenuProc implements MenuProc {
 
         @Override
@@ -126,8 +148,11 @@ public class MainActivity extends Activity {
 
     private static final String PATH_SESSION_ID = "session_id";
     private static final int REQUEST_CONFIRM = 42;
+    private static final int REQUEST_HOST_PREFERENCE = 43;
+    private static final String DEFAULT_HOST = "neko-daisuki.ddo.jp";
 
     // documents
+    private NexecHost mHost;
     private SessionId mSessionId;
 
     // views
@@ -157,11 +182,14 @@ public class MainActivity extends Activity {
         super.onPause();
         mNexecClient.disconnect();
         writeSessionId(mSessionId);
+        new File(getApplicationDirectoryPath()).mkdirs();
+        writeHost(mHost);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        mHost = readHost(getHostJsonPath());
         mSessionId = readSessionId();
         mAfterResumeProc.run();
     }
@@ -176,7 +204,11 @@ public class MainActivity extends Activity {
         mNexecClient = new NexecClient(this);
         mNexecClient.setOnXInvalidateListener(new OnXInvalidateListener());
         mMenuProcs.put(R.id.action_new_session, new NewSessionMenuProc());
+        mMenuProcs.put(R.id.action_host_preference,
+                       new HostPreferenceMenuProc());
         mResultProcs.put(REQUEST_CONFIRM, RESULT_OK, new ConfirmResultProc());
+        mResultProcs.put(REQUEST_HOST_PREFERENCE, RESULT_OK,
+                         new HostPreferenceResultProc());
     }
 
     @Override
@@ -247,5 +279,40 @@ public class MainActivity extends Activity {
 
         String s = String.format("%s: %s", msg, e.getMessage());
         Toast.makeText(this, s, Toast.LENGTH_LONG).show();
+    }
+
+    private String getApplicationDirectoryPath() {
+        String fmt = "%s/.android-nexec-client-x";
+        return String.format(fmt, Environment.getExternalStorageDirectory());
+    }
+
+    private String getHostJsonPath() {
+        return String.format("%s/host.json", getApplicationDirectoryPath());
+    }
+
+    private void writeHost(NexecHost host) {
+        writeHost(getHostJsonPath(), host);
+    }
+
+    private void writeHost(String path, NexecHost host) {
+        try {
+            NexecClient.Util.writeHostToJson(path, host);
+        }
+        catch (IOException e) {
+            handleException("Cannot write host information", e);
+        }
+    }
+
+    private NexecHost readHost(String path) {
+        try {
+            return NexecClient.Util.readHostFromJson(path);
+        }
+        catch (FileNotFoundException e) {
+            return new NexecHost(DEFAULT_HOST);
+        }
+        catch (IOException e) {
+            handleException("Cannot read host information", e);
+            return new NexecHost(DEFAULT_HOST);
+        }
     }
 }
