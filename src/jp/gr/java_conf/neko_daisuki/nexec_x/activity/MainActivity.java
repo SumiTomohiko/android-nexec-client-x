@@ -18,8 +18,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import jp.gr.java_conf.neko_daisuki.android.nexec.client.NexecClient;
-import jp.gr.java_conf.neko_daisuki.android.nexec.client.SessionId;
+import jp.gr.java_conf.neko_daisuki.android.nexec.client.share.SessionId;
+import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecClient;
+import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecHost;
 import jp.gr.java_conf.neko_daisuki.nexec_x.R;
 import jp.gr.java_conf.neko_daisuki.nexec_x.widget.XView;
 
