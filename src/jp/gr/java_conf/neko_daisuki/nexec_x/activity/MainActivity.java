@@ -127,8 +127,8 @@ public class MainActivity extends Activity {
         @Override
         public void run(MenuItem item) {
             NexecClient.Settings settings = new NexecClient.Settings();
-            settings.host = "neko-daisuki.ddo.jp";
-            settings.port = 57005;
+            settings.host = mHost.getHost();
+            settings.port = mHost.getPort();
             settings.args = new String[] { "xeyes" };
             settings.files = new String[0];
             settings.xWidth = mView.getWidth();
