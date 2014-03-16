@@ -130,6 +130,7 @@ public class MainActivity extends Activity {
             settings.host = mHost.getHost();
             settings.port = mHost.getPort();
             settings.args = new String[] { "xeyes" };
+            settings.addEnvironment("DISPLAY", ":0");
             settings.files = new String[0];
             settings.xWidth = mView.getWidth();
             settings.xHeight = mView.getHeight();
