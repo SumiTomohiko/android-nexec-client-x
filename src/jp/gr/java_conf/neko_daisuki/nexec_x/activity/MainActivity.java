@@ -147,6 +147,30 @@ public class MainActivity extends Activity {
         }
     }
 
+    private class OnExitListener implements NexecClient.OnExitListener {
+
+        @Override
+        public void onExit(NexecClient nexecClient, int exitCode) {
+            showToast(String.format("exit: %d", exitCode));
+        }
+    }
+
+    private class Toaster implements Runnable {
+
+        private String mMessage;
+
+        public Toaster(String message) {
+            mMessage = message;
+        }
+
+        @Override
+        public void run() {
+            String name = getString(getApplicationInfo().labelRes);
+            String s = String.format("%s: %s", name, mMessage);
+            Toast.makeText(MainActivity.this, s, Toast.LENGTH_LONG).show();
+        }
+    }
+
     private static final String PATH_SESSION_ID = "session_id";
     private static final int REQUEST_CONFIRM = 42;
     private static final int REQUEST_HOST_PREFERENCE = 43;
@@ -203,6 +227,7 @@ public class MainActivity extends Activity {
         mView = (XView)findViewById(R.id.x_view);
 
         mNexecClient = new NexecClient(this);
+        mNexecClient.setOnExitListener(new OnExitListener());
         mNexecClient.setOnXInvalidateListener(new OnXInvalidateListener());
         mMenuProcs.put(R.id.action_new_session, new NewSessionMenuProc());
         mMenuProcs.put(R.id.action_host_preference,
@@ -275,11 +300,13 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void showToast(String msg) {
+        runOnUiThread(new Toaster(msg));
+    }
+
     private void handleException(String msg, Throwable e) {
         e.printStackTrace();
-
-        String s = String.format("%s: %s", msg, e.getMessage());
-        Toast.makeText(this, s, Toast.LENGTH_LONG).show();
+        showToast(String.format("%s: %s", msg, e.getMessage()));
     }
 
     private String getApplicationDirectoryPath() {
