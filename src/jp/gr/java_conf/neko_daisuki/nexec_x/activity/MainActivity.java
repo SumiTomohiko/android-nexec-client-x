@@ -111,6 +111,14 @@ public class MainActivity extends Activity {
         public void run(MenuItem item);
     }
 
+    private class CancelSessionMenuProc implements MenuProc {
+
+        @Override
+        public void run(MenuItem item) {
+            mNexecClient.cancel();
+        }
+    }
+
     private class HostPreferenceMenuProc implements MenuProc {
 
         @Override
@@ -229,6 +237,7 @@ public class MainActivity extends Activity {
         mNexecClient = new NexecClient(this);
         mNexecClient.setOnExitListener(new OnExitListener());
         mNexecClient.setOnXInvalidateListener(new OnXInvalidateListener());
+        mMenuProcs.put(R.id.action_cancel_session, new CancelSessionMenuProc());
         mMenuProcs.put(R.id.action_new_session, new NewSessionMenuProc());
         mMenuProcs.put(R.id.action_host_preference,
                        new HostPreferenceMenuProc());

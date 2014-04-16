@@ -3,6 +3,7 @@
     <string name="app_name">Nexec X</string>
 
     <string name="action_about_this_app">About this app&#8230;</string>
+    <string name="action_cancel_session">Cancel this session</string>
     <string name="action_new_session">New session&#8230;</string>
     <string name="action_open_session">Open session&#8230;</string>
     <string name="action_host_preference">Host preference&#8230;</string>
