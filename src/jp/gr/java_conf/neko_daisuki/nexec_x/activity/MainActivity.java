@@ -10,11 +10,15 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -77,6 +81,8 @@ public class MainActivity extends Activity {
             @Override
             public void run() {
                 mSessionId = NexecUtil.getSessionId(mData);
+                mStderr.clear();
+
                 mNexecClient.execute(mSessionId);
             }
         }
@@ -160,6 +166,22 @@ public class MainActivity extends Activity {
         @Override
         public void onExit(NexecClient nexecClient, int exitCode) {
             showToast(String.format("exit: %d", exitCode));
+
+            int size = mStderr.size();
+            byte[] buf = new byte[size];
+            for (int i = 0; i < size; i++) {
+                buf[i] = mStderr.get(i).byteValue();
+            }
+            String s;
+            try {
+                s = new String(buf, "UTF-8");
+            }
+            catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                return;
+            }
+            Log.i(LOG_TAG, s);
+            //showToast(s);
         }
     }
 
@@ -179,14 +201,26 @@ public class MainActivity extends Activity {
         }
     }
 
+    private class OnStderrListener implements NexecClient.OnStderrListener {
+
+        @Override
+        public void onWrite(NexecClient nexecClient, byte[] buf) {
+            for (int i = 0; i < buf.length; i++) {
+                mStderr.add(Byte.valueOf(buf[i]));
+            }
+        }
+    }
+
     private static final String PATH_SESSION_ID = "session_id";
     private static final int REQUEST_CONFIRM = 42;
     private static final int REQUEST_HOST_PREFERENCE = 43;
     private static final String DEFAULT_HOST = "neko-daisuki.ddo.jp";
+    private static final String LOG_TAG = "activity";
 
     // documents
     private NexecHost mHost;
     private SessionId mSessionId;
+    private List<Byte> mStderr = new ArrayList<Byte>();
 
     // views
     private XView mView;
@@ -234,6 +268,7 @@ public class MainActivity extends Activity {
 
         mNexecClient = new NexecClient(this);
         mNexecClient.setOnExitListener(new OnExitListener());
+        mNexecClient.setOnStderrListener(new OnStderrListener());
         mNexecClient.setOnXInvalidateListener(new OnXInvalidateListener());
         mMenuProcs.put(R.id.action_cancel_session, new CancelSessionMenuProc());
         mMenuProcs.put(R.id.action_new_session, new NewSessionMenuProc());
