@@ -232,8 +232,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mView = (XView)findViewById(R.id.x_view);
-
         mNexecClient = new NexecClient(this);
         mNexecClient.setOnExitListener(new OnExitListener());
         mNexecClient.setOnXInvalidateListener(new OnXInvalidateListener());
@@ -244,6 +242,9 @@ public class MainActivity extends Activity {
         mResultProcs.put(REQUEST_CONFIRM, RESULT_OK, new ConfirmResultProc());
         mResultProcs.put(REQUEST_HOST_PREFERENCE, RESULT_OK,
                          new HostPreferenceResultProc());
+
+        mView = (XView)findViewById(R.id.x_view);
+        mView.setNexecClient(mNexecClient);
     }
 
     @Override
