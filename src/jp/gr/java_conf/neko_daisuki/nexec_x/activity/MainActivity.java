@@ -35,14 +35,14 @@ public class MainActivity extends Activity {
 
     private interface AfterResumeProc {
 
-        public void run();
+        public void run(SessionId savedSessionId);
     }
 
     private class ConnectAfterResumeProc implements AfterResumeProc {
 
         @Override
-        public void run() {
-            mNexecClient.connect(mSessionId);
+        public void run(SessionId savedSessionId) {
+            mNexecClient.connect(savedSessionId);
         }
     }
 
@@ -79,11 +79,9 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public void run() {
-                mSessionId = NexecUtil.getSessionId(mData);
+            public void run(SessionId savedSessionId) {
                 mStderr.clear();
-
-                mNexecClient.execute(mSessionId);
+                mNexecClient.execute(NexecUtil.getSessionId(mData));
             }
         }
 
@@ -117,11 +115,11 @@ public class MainActivity extends Activity {
         public void run(MenuItem item);
     }
 
-    private class CancelSessionMenuProc implements MenuProc {
+    private class QuitSessionMenuProc implements MenuProc {
 
         @Override
         public void run(MenuItem item) {
-            mNexecClient.cancel();
+            mNexecClient.quit();
         }
     }
 
@@ -219,7 +217,6 @@ public class MainActivity extends Activity {
 
     // documents
     private NexecHost mHost;
-    private SessionId mSessionId;
     private List<Byte> mStderr = new ArrayList<Byte>();
 
     // views
@@ -245,10 +242,18 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        boolean isNull = mNexecClient.getSessionId().isNull();
+        menu.findItem(R.id.action_new_session).setEnabled(isNull);
+        menu.findItem(R.id.action_quit_session).setEnabled(!isNull);
+        return true;
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         mNexecClient.disconnect();
-        writeSessionId(mSessionId);
+        writeSessionId(mNexecClient.getSessionId());
         new File(getApplicationDirectoryPath()).mkdirs();
         writeHost(mHost);
     }
@@ -257,8 +262,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         mHost = readHost(getHostJsonPath());
-        mSessionId = readSessionId();
-        mAfterResumeProc.run();
+        mAfterResumeProc.run(readSessionId());
     }
 
     @Override
@@ -270,7 +274,7 @@ public class MainActivity extends Activity {
         mNexecClient.setOnExitListener(new OnExitListener());
         mNexecClient.setOnStderrListener(new OnStderrListener());
         mNexecClient.setOnXInvalidateListener(new OnXInvalidateListener());
-        mMenuProcs.put(R.id.action_cancel_session, new CancelSessionMenuProc());
+        mMenuProcs.put(R.id.action_quit_session, new QuitSessionMenuProc());
         mMenuProcs.put(R.id.action_new_session, new NewSessionMenuProc());
         mMenuProcs.put(R.id.action_host_preference,
                        new HostPreferenceMenuProc());

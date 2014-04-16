@@ -3,12 +3,8 @@
         android:id="@+id/action_new_session"
         android:title="@string/action_new_session"/>
     <item
-        android:id="@+id/action_open_session"
-        android:title="@string/action_open_session"
-        android:enabled="false"/>
-    <item
-        android:id="@+id/action_cancel_session"
-        android:title="@string/action_cancel_session"/>
+        android:id="@+id/action_quit_session"
+        android:title="@string/action_quit_session"/>
     <item
         android:id="@+id/action_host_preference"
         android:title="@string/action_host_preference"/>
