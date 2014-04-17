@@ -252,8 +252,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        mNexecClient.disconnect();
         writeSessionId(mNexecClient.getSessionId());
+        mNexecClient.disconnect();
         new File(getApplicationDirectoryPath()).mkdirs();
         writeHost(mHost);
     }
