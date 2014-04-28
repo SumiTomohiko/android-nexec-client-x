@@ -82,6 +82,7 @@ public class MainActivity extends Activity {
             public void run(SessionId savedSessionId) {
                 mStderr.clear();
                 mNexecClient.execute(NexecUtil.getSessionId(mData));
+                invalidateOptionsMenu();
             }
         }
 
@@ -120,6 +121,7 @@ public class MainActivity extends Activity {
         @Override
         public void run(MenuItem item) {
             mNexecClient.quit();
+            invalidateOptionsMenu();
         }
     }
 
