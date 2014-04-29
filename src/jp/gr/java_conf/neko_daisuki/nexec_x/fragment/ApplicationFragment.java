@@ -13,7 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -72,10 +72,13 @@ public class ApplicationFragment extends DialogFragment {
             Application application = mApplications[position];
             setText(view, R.id.caption_text, application.getCaption());
             setText(view, R.id.description_text, application.getDescription());
-            view.setOnClickListener(new OnClickListener(position));
+            OnClickListener listener = new OnClickListener(position);
+            view.setOnClickListener(listener);
 
-            CheckBox checkBox = (CheckBox)view.findViewById(R.id.checkbox);
-            checkBox.setChecked(position == mSelectedPosition);
+            int id = R.id.checkbox;
+            CompoundButton checkable = (CompoundButton)view.findViewById(id);
+            checkable.setChecked(position == mSelectedPosition);
+            checkable.setOnClickListener(listener);
 
             return view;
         }
@@ -104,7 +107,7 @@ public class ApplicationFragment extends DialogFragment {
     private OnSelectedListener mListener;
 
     // views
-    private int mSelectedPosition = -1;
+    private int mSelectedPosition = 0;
 
     public static DialogFragment newInstance() {
         return new ApplicationFragment();
