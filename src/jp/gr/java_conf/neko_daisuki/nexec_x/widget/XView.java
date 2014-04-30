@@ -108,7 +108,6 @@ public class XView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        android.util.Log.i("X Server", String.format("onTouchEvent: event=%s", event.toString()));
         TouchEventHandler handler = mHandlers.get(event.getActionMasked());
         return (handler != null ? handler : mNopHandler).run(event);
     }
