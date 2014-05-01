@@ -1,5 +1,22 @@
-<jp.gr.java_conf.neko_daisuki.nexec_x.widget.XView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/x_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    android:layout_height="match_parent">
+    <jp.gr.java_conf.neko_daisuki.nexec_x.widget.XView
+        android:id="@+id/x_view"
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+    <ImageButton
+        android:id="@+id/zoom_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_zoom_in"
+        android:contentDescription="@string/img_zoom_in"/>
+    <ImageButton
+        android:id="@+id/zoom_out_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_zoom_out"
+        android:contentDescription="@string/img_zoom_out"/>
+</LinearLayout>

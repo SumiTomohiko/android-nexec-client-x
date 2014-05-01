@@ -84,6 +84,7 @@ public class XView extends View {
     }
 
     private NexecClient mClient;
+    private int mScale = 1;
 
     // helpers
     private GestureDetector mGestureDetector;
@@ -112,12 +113,25 @@ public class XView extends View {
         return mGestureDetector.onTouchEvent(event);
     }
 
+    public void zoomIn() {
+        mScale += 1;
+        postInvalidate();
+    }
+
+    public void zoomOut() {
+        mScale = 1 < mScale ? mScale - 1 : 1;
+        postInvalidate();
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
-        Bitmap bitmap = mClient.xDraw();
-        if (bitmap == null) {
+        Bitmap src = mClient.xDraw();
+        if (src == null) {
             return;
         }
+        int width = mScale * src.getWidth();
+        int height = mScale * src.getHeight();
+        Bitmap bitmap = Bitmap.createScaledBitmap(src, width, height, true);
         canvas.drawBitmap(bitmap, 0.0f, 0.0f, null);
     }
 
@@ -127,6 +141,8 @@ public class XView extends View {
     }
 
     private void xMotionNotify(MotionEvent event) {
-        mClient.xMotionNotify((int)event.getX(), (int)event.getY());
+        int x = (int)event.getX() / mScale;
+        int y = (int)event.getY() / mScale;
+        mClient.xMotionNotify(x, y);
     }
 }

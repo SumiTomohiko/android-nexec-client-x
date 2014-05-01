@@ -22,6 +22,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.share.SessionId;
@@ -205,6 +206,22 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         }
     }
 
+    private class ZoomOutButtonOnClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            mView.zoomOut();
+        }
+    }
+
+    private class ZoomInButtonOnClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            mView.zoomIn();
+        }
+    }
+
     private static final String PATH_SESSION_ID = "session_id";
     private static final int REQUEST_CONFIRM = 42;
     private static final int REQUEST_HOST_PREFERENCE = 43;
@@ -295,6 +312,11 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
 
         mView = (XView)findViewById(R.id.x_view);
         mView.setNexecClient(mNexecClient);
+
+        View zoomInButton = findViewById(R.id.zoom_in_button);
+        zoomInButton.setOnClickListener(new ZoomInButtonOnClickListener());
+        View zoomOutButton = findViewById(R.id.zoom_out_button);
+        zoomOutButton.setOnClickListener(new ZoomOutButtonOnClickListener());
     }
 
     @Override
