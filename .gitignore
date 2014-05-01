@@ -33,3 +33,5 @@ proguard/
 /res/drawable-*dpi/ic_launcher.png
 /res/drawable-*dpi/ic_left_button.png
 /res/drawable-*dpi/ic_right_button.png
+/res/drawable-*dpi/ic_zoom_in.png
+/res/drawable-*dpi/ic_zoom_out.png
