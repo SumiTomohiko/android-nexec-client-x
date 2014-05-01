@@ -29,6 +29,7 @@ proguard/
 .idea/
 
 /*.log
+/.externalToolBuilders
 /ic_launcher-web.png
 /res/drawable-*dpi/ic_launcher.png
 /res/drawable-*dpi/ic_left_button.png

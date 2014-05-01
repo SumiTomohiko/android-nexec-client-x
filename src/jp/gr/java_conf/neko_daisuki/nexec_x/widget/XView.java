@@ -3,9 +3,8 @@ package jp.gr.java_conf.neko_daisuki.nexec_x.widget;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.os.SystemClock;
 import android.util.AttributeSet;
-import android.util.SparseArray;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -13,93 +12,95 @@ import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecClient;
 
 public class XView extends View {
 
-    private interface ActionUpProc {
+    private class OnGestureListener implements GestureDetector.OnGestureListener {
 
-        public void run();
-    }
+        private abstract class LongPressedHandler {
 
-    private interface TouchEventHandler {
-
-        public class Nop implements TouchEventHandler {
-
-            @Override
-            public boolean run(MotionEvent event) {
-                return false;
-            }
+            public abstract void run();
         }
 
-        public boolean run(MotionEvent event);
-    }
-
-    private class ActionDownHandler implements TouchEventHandler {
-
-        @Override
-        public boolean run(MotionEvent event) {
-            xMotionNotify(event);
-            mDownTime = SystemClock.uptimeMillis();
-            return true;
-        }
-    }
-
-    private class ActionUpHandler implements TouchEventHandler {
-
-        private class NopActionUpProc implements ActionUpProc {
-
-            @Override
-            public void run() {
-            }
-        }
-
-        private class ClickingActionUpProc implements ActionUpProc {
+        private class PressingLongPressedHandler extends LongPressedHandler {
 
             @Override
             public void run() {
                 mClient.xLeftButtonPress();
-                mClient.xLeftButtonRelease();
+                mLongPressedHandler = mReleasingLongPressedHandler;
             }
         }
 
-        private ActionUpProc mNop = new NopActionUpProc();
-        private ActionUpProc mClickingProc = new ClickingActionUpProc();
+        private class ReleasingLongPressedHandler extends LongPressedHandler {
+
+            @Override
+            public void run() {
+                mClient.xLeftButtonRelease();
+                mLongPressedHandler = mPressingLongPressedHandler;
+            }
+        }
+
+        private LongPressedHandler mPressingLongPressedHandler;
+        private LongPressedHandler mReleasingLongPressedHandler;
+        private LongPressedHandler mLongPressedHandler;
+
+        public OnGestureListener() {
+            mPressingLongPressedHandler = new PressingLongPressedHandler();
+            mReleasingLongPressedHandler = new ReleasingLongPressedHandler();
+            mLongPressedHandler = mPressingLongPressedHandler;
+        }
 
         @Override
-        public boolean run(MotionEvent event) {
-            long deltaT = mDownTime - SystemClock.uptimeMillis();
-            ActionUpProc proc = deltaT < 400 ? mClickingProc : mNop;
-            proc.run();
+        public boolean onDown(MotionEvent e) {
+            xMotionNotify(e);
             return true;
         }
-    }
-
-    private class ActionMoveHandler implements TouchEventHandler {
 
         @Override
-        public boolean run(MotionEvent event) {
-            xMotionNotify(event);
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+                               float velocityY) {
+            return false;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            mLongPressedHandler.run();
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+                                float distanceY) {
+            xMotionNotify(e2);
+            return true;
+        }
+
+        @Override
+        public void onShowPress(MotionEvent e) {
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            mClient.xLeftButtonPress();
+            mClient.xLeftButtonRelease();
             return true;
         }
     }
 
     private NexecClient mClient;
-    private long mDownTime;
 
     // helpers
-    private SparseArray<TouchEventHandler> mHandlers;
-    private TouchEventHandler mNopHandler = new TouchEventHandler.Nop();
+    private GestureDetector mGestureDetector;
 
     public XView(Context context) {
         super(context);
-        initialize();
+        initialize(context);
     }
 
     public XView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initialize();
+        initialize(context);
     }
 
     public XView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initialize();
+        initialize(context);
     }
 
     public void setNexecClient(NexecClient client) {
@@ -108,9 +109,7 @@ public class XView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        android.util.Log.i("X Server", String.format("onTouchEvent: event=%s", event.toString()));
-        TouchEventHandler handler = mHandlers.get(event.getActionMasked());
-        return (handler != null ? handler : mNopHandler).run(event);
+        return mGestureDetector.onTouchEvent(event);
     }
 
     @Override
@@ -122,11 +121,9 @@ public class XView extends View {
         canvas.drawBitmap(bitmap, 0.0f, 0.0f, null);
     }
 
-    private void initialize() {
-        mHandlers = new SparseArray<TouchEventHandler>();
-        mHandlers.put(MotionEvent.ACTION_DOWN, new ActionDownHandler());
-        mHandlers.put(MotionEvent.ACTION_MOVE, new ActionMoveHandler());
-        mHandlers.put(MotionEvent.ACTION_UP, new ActionUpHandler());
+    private void initialize(Context context) {
+        mGestureDetector = new GestureDetector(context,
+                                               new OnGestureListener());
     }
 
     private void xMotionNotify(MotionEvent event) {

@@ -14,10 +14,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -29,9 +29,11 @@ import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecClient;
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecHost;
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecUtil;
 import jp.gr.java_conf.neko_daisuki.nexec_x.R;
+import jp.gr.java_conf.neko_daisuki.nexec_x.fragment.ApplicationFragment;
+import jp.gr.java_conf.neko_daisuki.nexec_x.model.Application;
 import jp.gr.java_conf.neko_daisuki.nexec_x.widget.XView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity implements ApplicationFragment.OnSelectedListener {
 
     private interface AfterResumeProc {
 
@@ -82,6 +84,7 @@ public class MainActivity extends Activity {
             public void run(SessionId savedSessionId) {
                 mStderr.clear();
                 mNexecClient.execute(NexecUtil.getSessionId(mData));
+                invalidateOptionsMenu();
             }
         }
 
@@ -120,6 +123,7 @@ public class MainActivity extends Activity {
         @Override
         public void run(MenuItem item) {
             mNexecClient.quit();
+            invalidateOptionsMenu();
         }
     }
 
@@ -138,16 +142,8 @@ public class MainActivity extends Activity {
 
         @Override
         public void run(MenuItem item) {
-            NexecClient.Settings settings = new NexecClient.Settings();
-            settings.host = mHost.getHost();
-            settings.port = mHost.getPort();
-            settings.args = new String[] { "xeyes" };
-            settings.addEnvironment("DISPLAY", ":0");
-            settings.files = new String[0];
-            settings.xWidth = mView.getWidth();
-            settings.xHeight = mView.getHeight();
-
-            mNexecClient.request(settings, REQUEST_CONFIRM);
+            String tag = "applications";
+            new ApplicationFragment().show(getSupportFragmentManager(), tag);
         }
     }
 
@@ -247,6 +243,21 @@ public class MainActivity extends Activity {
         menu.findItem(R.id.action_new_session).setEnabled(isNull);
         menu.findItem(R.id.action_quit_session).setEnabled(!isNull);
         return true;
+    }
+
+    @Override
+    public void onSelected(ApplicationFragment fragment,
+                           Application application) {
+        NexecClient.Settings settings = new NexecClient.Settings();
+        settings.host = mHost.getHost();
+        settings.port = mHost.getPort();
+        settings.args = application.getArguments();
+        settings.addEnvironment("DISPLAY", ":0");
+        settings.files = new String[0];
+        settings.xWidth = mView.getWidth();
+        settings.xHeight = mView.getHeight();
+
+        mNexecClient.request(settings, REQUEST_CONFIRM);
     }
 
     @Override

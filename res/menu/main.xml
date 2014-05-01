@@ -1,10 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_new_session"
-        android:title="@string/action_new_session"/>
+        android:title="@string/action_new_session"
+        android:showAsAction="ifRoom"/>
     <item
         android:id="@+id/action_quit_session"
-        android:title="@string/action_quit_session"/>
+        android:title="@string/action_quit_session"
+        android:showAsAction="ifRoom"/>
     <item
         android:id="@+id/action_host_preference"
         android:title="@string/action_host_preference"/>
