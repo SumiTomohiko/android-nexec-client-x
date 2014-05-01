@@ -119,6 +119,14 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         public void run(MenuItem item);
     }
 
+    private class AboutMenuProc implements MenuProc {
+
+        @Override
+        public void run(MenuItem item) {
+            AboutActivity.show(MainActivity.this);
+        }
+    }
+
     private class QuitSessionMenuProc implements MenuProc {
 
         @Override
@@ -306,6 +314,7 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         mMenuProcs.put(R.id.action_new_session, new NewSessionMenuProc());
         mMenuProcs.put(R.id.action_host_preference,
                        new HostPreferenceMenuProc());
+        mMenuProcs.put(R.id.action_about_this_app, new AboutMenuProc());
         mResultProcs.put(REQUEST_CONFIRM, RESULT_OK, new ConfirmResultProc());
         mResultProcs.put(REQUEST_HOST_PREFERENCE, RESULT_OK,
                          new HostPreferenceResultProc());

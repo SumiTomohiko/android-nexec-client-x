@@ -10,6 +10,12 @@
     <string name="img_zoom_in">Zoom in</string>
     <string name="img_zoom_out">Zoom out</string>
 
+    <string name="version_title">Version</string>
+    <string name="url">
+        http://neko-daisuki.ddo.jp/~SumiTomohiko/index.html
+    </string>
+    <string name="authors_website_title">Author\'s website</string>
+    <string name="license_title">License</string>
     <string name="positive">Okay</string>
     <string name="negative">Cancel</string>
 </resources>
