@@ -8,6 +8,16 @@
         android:title="@string/action_quit_session"
         android:showAsAction="ifRoom"/>
     <item
+        android:id="@+id/action_zoom_in"
+        android:title="@string/action_zoom_in"
+        android:icon="@drawable/ic_zoom_in"
+        android:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_zoom_out"
+        android:title="@string/action_zoom_out"
+        android:icon="@drawable/ic_zoom_out"
+        android:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/action_host_preference"
         android:title="@string/action_host_preference"/>
     <item

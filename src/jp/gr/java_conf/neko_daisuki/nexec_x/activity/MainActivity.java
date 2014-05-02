@@ -22,7 +22,6 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.share.SessionId;
@@ -147,6 +146,22 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         }
     }
 
+    private class ZoomInMenuProc implements MenuProc {
+
+        @Override
+        public void run(MenuItem item) {
+            mView.zoomIn();
+        }
+    }
+
+    private class ZoomOutMenuProc implements MenuProc {
+
+        @Override
+        public void run(MenuItem item) {
+            mView.zoomOut();
+        }
+    }
+
     private class NewSessionMenuProc implements MenuProc {
 
         @Override
@@ -211,22 +226,6 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
             for (int i = 0; i < buf.length; i++) {
                 mStderr.add(Byte.valueOf(buf[i]));
             }
-        }
-    }
-
-    private class ZoomOutButtonOnClickListener implements View.OnClickListener {
-
-        @Override
-        public void onClick(View v) {
-            mView.zoomOut();
-        }
-    }
-
-    private class ZoomInButtonOnClickListener implements View.OnClickListener {
-
-        @Override
-        public void onClick(View v) {
-            mView.zoomIn();
         }
     }
 
@@ -312,6 +311,8 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         mNexecClient.setOnXInvalidateListener(new OnXInvalidateListener());
         mMenuProcs.put(R.id.action_quit_session, new QuitSessionMenuProc());
         mMenuProcs.put(R.id.action_new_session, new NewSessionMenuProc());
+        mMenuProcs.put(R.id.action_zoom_in, new ZoomInMenuProc());
+        mMenuProcs.put(R.id.action_zoom_out, new ZoomOutMenuProc());
         mMenuProcs.put(R.id.action_host_preference,
                        new HostPreferenceMenuProc());
         mMenuProcs.put(R.id.action_about_this_app, new AboutMenuProc());
@@ -321,11 +322,6 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
 
         mView = (XView)findViewById(R.id.x_view);
         mView.setNexecClient(mNexecClient);
-
-        View zoomInButton = findViewById(R.id.zoom_in_button);
-        zoomInButton.setOnClickListener(new ZoomInButtonOnClickListener());
-        View zoomOutButton = findViewById(R.id.zoom_out_button);
-        zoomOutButton.setOnClickListener(new ZoomOutButtonOnClickListener());
     }
 
     @Override
