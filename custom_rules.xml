@@ -39,6 +39,8 @@
         <svg2drawables name="ic_right_button"/>
         <svg2drawables name="ic_zoom_in"/>
         <svg2drawables name="ic_zoom_out"/>
+        <svg2drawables name="ic_new_session"/>
+        <svg2drawables name="ic_quit_session"/>
         <svg2icon
             src="icons/ic_launcher.svg" dest="ic_launcher-web.png" size="512"/>
     </target>

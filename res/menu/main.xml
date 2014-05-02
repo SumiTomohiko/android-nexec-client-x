@@ -2,11 +2,13 @@
     <item
         android:id="@+id/action_new_session"
         android:title="@string/action_new_session"
-        android:showAsAction="ifRoom"/>
+        android:icon="@drawable/ic_new_session"
+        android:showAsAction="ifRoom|withText"/>
     <item
         android:id="@+id/action_quit_session"
         android:title="@string/action_quit_session"
-        android:showAsAction="ifRoom"/>
+        android:icon="@drawable/ic_quit_session"
+        android:showAsAction="ifRoom|withText"/>
     <item
         android:id="@+id/action_zoom_in"
         android:title="@string/action_zoom_in"
