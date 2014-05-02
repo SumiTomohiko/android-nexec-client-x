@@ -132,6 +132,7 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         public void run(MenuItem item) {
             mNexecClient.quit();
             invalidateOptionsMenu();
+            mView.invalidate();
         }
     }
 
