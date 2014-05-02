@@ -104,6 +104,10 @@ public class XView extends View {
         initialize(context);
     }
 
+    public int getScale() {
+        return mScale;
+    }
+
     public void setNexecClient(NexecClient client) {
         mClient = client;
     }

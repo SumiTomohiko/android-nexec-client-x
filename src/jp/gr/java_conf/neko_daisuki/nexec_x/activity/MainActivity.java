@@ -146,19 +146,31 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         }
     }
 
-    private class ZoomInMenuProc implements MenuProc {
+    private abstract class ZoomMenuProc implements MenuProc {
+
+        public abstract void run(MenuItem item);
+
+        protected void showScale() {
+            showToast(String.format("x%d", mView.getScale()));
+        }
+
+    }
+
+    private class ZoomInMenuProc extends ZoomMenuProc {
 
         @Override
         public void run(MenuItem item) {
             mView.zoomIn();
+            showScale();
         }
     }
 
-    private class ZoomOutMenuProc implements MenuProc {
+    private class ZoomOutMenuProc extends ZoomMenuProc {
 
         @Override
         public void run(MenuItem item) {
             mView.zoomOut();
+            showScale();
         }
     }
 
