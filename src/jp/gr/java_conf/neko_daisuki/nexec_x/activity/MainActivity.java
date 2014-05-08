@@ -152,7 +152,7 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         public abstract void run(MenuItem item);
 
         protected void showScale() {
-            showToast(String.format("x%d", mView.getScale()));
+            showShortToast(String.format("x%d", mView.getScale()));
         }
 
     }
@@ -219,16 +219,32 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
     private class Toaster implements Runnable {
 
         private String mMessage;
+        private int mDuration;
 
-        public Toaster(String message) {
+        public Toaster(String message, int duration) {
             mMessage = message;
+            mDuration = duration;
         }
 
         @Override
         public void run() {
             String name = getString(getApplicationInfo().labelRes);
             String s = String.format("%s: %s", name, mMessage);
-            Toast.makeText(MainActivity.this, s, Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, s, mDuration).show();
+        }
+    }
+
+    private class LongToaster extends Toaster {
+
+        public LongToaster(String message) {
+            super(message, Toast.LENGTH_LONG);
+        }
+    }
+
+    private class ShortToaster extends Toaster {
+
+        public ShortToaster(String message) {
+            super(message, Toast.LENGTH_SHORT);
         }
     }
 
@@ -400,8 +416,12 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         }
     }
 
+    private void showShortToast(String msg) {
+        runOnUiThread(new ShortToaster(msg));
+    }
+
     private void showToast(String msg) {
-        runOnUiThread(new Toaster(msg));
+        runOnUiThread(new LongToaster(msg));
     }
 
     private void handleException(String msg, Throwable e) {
