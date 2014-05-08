@@ -3,6 +3,7 @@ package jp.gr.java_conf.neko_daisuki.nexec_x.widget;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -84,10 +85,11 @@ public class XView extends View {
     }
 
     private NexecClient mClient;
-    private int mScale = 1;
+    private int mScale;
 
     // helpers
     private GestureDetector mGestureDetector;
+    private Matrix mMatrix;
 
     public XView(Context context) {
         super(context);
@@ -118,30 +120,34 @@ public class XView extends View {
     }
 
     public void zoomIn() {
-        mScale += 1;
+        setScale(mScale + 1);
         postInvalidate();
     }
 
     public void zoomOut() {
-        mScale = 1 < mScale ? mScale - 1 : 1;
+        setScale(1 < mScale ? mScale - 1 : 1);
         postInvalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Bitmap src = mClient.xDraw();
-        if (src == null) {
+        Bitmap bitmap = mClient.xDraw();
+        if (bitmap == null) {
             return;
         }
-        int width = mScale * src.getWidth();
-        int height = mScale * src.getHeight();
-        Bitmap bitmap = Bitmap.createScaledBitmap(src, width, height, true);
-        canvas.drawBitmap(bitmap, 0.0f, 0.0f, null);
+        canvas.drawBitmap(bitmap, mMatrix, null);
+    }
+
+    private void setScale(int scale) {
+        mScale = scale;
+        mMatrix = new Matrix();
+        mMatrix.postScale(mScale, mScale);
     }
 
     private void initialize(Context context) {
         mGestureDetector = new GestureDetector(context,
                                                new OnGestureListener());
+        setScale(1);
     }
 
     private void xMotionNotify(MotionEvent event) {
