@@ -14,6 +14,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -82,7 +84,9 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
 
             @Override
             public void run(SessionId savedSessionId) {
+                mProgressDialog.show();
                 mStderr.clear();
+                mNexecClient.setOnXInvalidateListener(mFirstOnXInvalidateListener);
                 mNexecClient.execute(NexecUtil.getSessionId(mData));
                 invalidateOptionsMenu();
             }
@@ -184,11 +188,30 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         }
     }
 
-    private class OnXInvalidateListener implements NexecClient.OnXInvalidateListener {
+    private abstract class BaseOnXInvalidateListener implements NexecClient.OnXInvalidateListener {
 
         @Override
         public void onInvalidate(int left, int top, int right, int bottom) {
+            preInvalidate();
             mView.postInvalidate();
+        }
+
+        protected abstract void preInvalidate();
+    }
+
+    private class FirstOnXInvalidateListener extends BaseOnXInvalidateListener {
+
+        @Override
+        protected void preInvalidate() {
+            mProgressDialog.dismiss();
+            mNexecClient.setOnXInvalidateListener(mOnXInvalidateListener);
+        }
+    }
+
+    private class OnXInvalidateListener extends BaseOnXInvalidateListener {
+
+        @Override
+        protected void preInvalidate() {
         }
     }
 
@@ -270,12 +293,15 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
 
     // views
     private XView mView;
+    private Dialog mProgressDialog;
 
     // helpers
     private NexecClient mNexecClient;
     private SparseArray<MenuProc> mMenuProcs = new SparseArray<MenuProc>();
     private ResultProcs mResultProcs = new ResultProcs();
     private AfterResumeProc mAfterResumeProc = new ConnectAfterResumeProc();
+    private NexecClient.OnXInvalidateListener mFirstOnXInvalidateListener;
+    private NexecClient.OnXInvalidateListener mOnXInvalidateListener;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -337,7 +363,6 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         mNexecClient = new NexecClient(this);
         mNexecClient.setOnExitListener(new OnExitListener());
         mNexecClient.setOnStderrListener(new OnStderrListener());
-        mNexecClient.setOnXInvalidateListener(new OnXInvalidateListener());
         mMenuProcs.put(R.id.action_quit_session, new QuitSessionMenuProc());
         mMenuProcs.put(R.id.action_new_session, new NewSessionMenuProc());
         mMenuProcs.put(R.id.action_zoom_in, new ZoomInMenuProc());
@@ -348,6 +373,14 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         mResultProcs.put(REQUEST_CONFIRM, RESULT_OK, new ConfirmResultProc());
         mResultProcs.put(REQUEST_HOST_PREFERENCE, RESULT_OK,
                          new HostPreferenceResultProc());
+        ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.setCancelable(false);
+        dialog.setTitle("Please wait");
+        dialog.setMessage("Initializing X...");
+        mProgressDialog = dialog;
+        mFirstOnXInvalidateListener = new FirstOnXInvalidateListener();
+        mOnXInvalidateListener = new OnXInvalidateListener();
 
         mView = (XView)findViewById(R.id.x_view);
         mView.setNexecClient(mNexecClient);
