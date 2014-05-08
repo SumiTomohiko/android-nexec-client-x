@@ -220,6 +220,7 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         @Override
         public void onExit(NexecClient nexecClient, int exitCode) {
             showToast(String.format("exit: %d", exitCode));
+            mProgressDialog.dismiss();
 
             int size = mStderr.size();
             byte[] buf = new byte[size];
