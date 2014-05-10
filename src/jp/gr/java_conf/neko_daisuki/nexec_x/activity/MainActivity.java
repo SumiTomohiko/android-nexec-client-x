@@ -130,13 +130,52 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         }
     }
 
+    private class PressRightButtonMenuProc implements MenuProc {
+
+        @Override
+        public void run(MenuItem item) {
+            mNexecClient.xRightButtonPress();
+            mPressingRightButton = true;
+            invalidateX();
+        }
+    }
+
+    private class ReleaseRightButtonMenuProc implements MenuProc {
+
+        @Override
+        public void run(MenuItem item) {
+            mNexecClient.xRightButtonRelease();
+            mPressingRightButton = false;
+            invalidateX();
+        }
+    }
+
+    private class PressLeftButtonMenuProc implements MenuProc {
+
+        @Override
+        public void run(MenuItem item) {
+            mNexecClient.xLeftButtonPress();
+            mPressingLeftButton = true;
+            invalidateX();
+        }
+    }
+
+    private class ReleaseLeftButtonMenuProc implements MenuProc {
+
+        @Override
+        public void run(MenuItem item) {
+            mNexecClient.xLeftButtonRelease();
+            mPressingLeftButton = false;
+            invalidateX();
+        }
+    }
+
     private class QuitSessionMenuProc implements MenuProc {
 
         @Override
         public void run(MenuItem item) {
             mNexecClient.quit();
-            invalidateOptionsMenu();
-            mView.invalidate();
+            invalidateX();
         }
     }
 
@@ -183,6 +222,9 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
 
         @Override
         public void run(MenuItem item) {
+            mPressingLeftButton = mPressingRightButton = false;
+            invalidateX();
+
             String tag = "applications";
             new ApplicationFragment().show(getSupportFragmentManager(), tag);
         }
@@ -293,6 +335,8 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
     private List<Byte> mStderr = new ArrayList<Byte>();
 
     // views
+    private boolean mPressingLeftButton = false;
+    private boolean mPressingRightButton = false;
     private XView mView;
     private Dialog mProgressDialog;
 
@@ -322,6 +366,12 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         boolean isNull = mNexecClient.getSessionId().isNull();
         menu.findItem(R.id.action_new_session).setEnabled(isNull);
         menu.findItem(R.id.action_quit_session).setEnabled(!isNull);
+
+        menu.findItem(R.id.action_press_left_button).setVisible(!mPressingLeftButton);
+        menu.findItem(R.id.action_release_left_button).setVisible(mPressingLeftButton);
+        menu.findItem(R.id.action_press_right_button).setVisible(!mPressingRightButton);
+        menu.findItem(R.id.action_release_right_button).setVisible(mPressingRightButton);
+
         return true;
     }
 
@@ -366,6 +416,14 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         mNexecClient.setOnStderrListener(new OnStderrListener());
         mMenuProcs.put(R.id.action_quit_session, new QuitSessionMenuProc());
         mMenuProcs.put(R.id.action_new_session, new NewSessionMenuProc());
+        mMenuProcs.put(R.id.action_press_left_button,
+                       new PressLeftButtonMenuProc());
+        mMenuProcs.put(R.id.action_release_left_button,
+                       new ReleaseLeftButtonMenuProc());
+        mMenuProcs.put(R.id.action_press_right_button,
+                       new PressRightButtonMenuProc());
+        mMenuProcs.put(R.id.action_release_right_button,
+                       new ReleaseRightButtonMenuProc());
         mMenuProcs.put(R.id.action_zoom_in, new ZoomInMenuProc());
         mMenuProcs.put(R.id.action_zoom_out, new ZoomOutMenuProc());
         mMenuProcs.put(R.id.action_host_preference,
@@ -496,5 +554,10 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
             handleException("Cannot read host information", e);
             return new NexecHost(DEFAULT_HOST);
         }
+    }
+
+    private void invalidateX() {
+        invalidateOptionsMenu();
+        mView.invalidate();
     }
 }

@@ -3,12 +3,34 @@
         android:id="@+id/action_new_session"
         android:title="@string/action_new_session"
         android:icon="@drawable/ic_new_session"
-        android:showAsAction="ifRoom|withText"/>
+        android:showAsAction="ifRoom"/>
     <item
         android:id="@+id/action_quit_session"
         android:title="@string/action_quit_session"
         android:icon="@drawable/ic_quit_session"
-        android:showAsAction="ifRoom|withText"/>
+        android:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_press_left_button"
+        android:title="@string/action_press_left_button"
+        android:icon="@drawable/ic_left_button"
+        android:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_release_left_button"
+        android:title="@string/action_release_left_button"
+        android:icon="@drawable/ic_left_button"
+        android:showAsAction="ifRoom"
+        android:visible="false"/>
+    <item
+        android:id="@+id/action_press_right_button"
+        android:title="@string/action_press_right_button"
+        android:icon="@drawable/ic_right_button"
+        android:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_release_right_button"
+        android:title="@string/action_release_right_button"
+        android:icon="@drawable/ic_right_button"
+        android:showAsAction="ifRoom"
+        android:visible="false"/>
     <item
         android:id="@+id/action_zoom_in"
         android:title="@string/action_zoom_in"

@@ -4,6 +4,10 @@
 
     <string name="action_about_this_app">About this app&#8230;</string>
     <string name="action_new_session">New session&#8230;</string>
+    <string name="action_press_left_button">Press left</string>
+    <string name="action_release_left_button">Release left</string>
+    <string name="action_press_right_button">Press right</string>
+    <string name="action_release_right_button">Release right</string>
     <string name="action_zoom_in">Zoom in</string>
     <string name="action_zoom_out">Zoom out</string>
     <string name="action_quit_session">Quit this session</string>
