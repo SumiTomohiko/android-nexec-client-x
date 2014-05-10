@@ -15,39 +15,6 @@ public class XView extends View {
 
     private class OnGestureListener implements GestureDetector.OnGestureListener {
 
-        private abstract class LongPressedHandler {
-
-            public abstract void run();
-        }
-
-        private class PressingLongPressedHandler extends LongPressedHandler {
-
-            @Override
-            public void run() {
-                mClient.xLeftButtonPress();
-                mLongPressedHandler = mReleasingLongPressedHandler;
-            }
-        }
-
-        private class ReleasingLongPressedHandler extends LongPressedHandler {
-
-            @Override
-            public void run() {
-                mClient.xLeftButtonRelease();
-                mLongPressedHandler = mPressingLongPressedHandler;
-            }
-        }
-
-        private LongPressedHandler mPressingLongPressedHandler;
-        private LongPressedHandler mReleasingLongPressedHandler;
-        private LongPressedHandler mLongPressedHandler;
-
-        public OnGestureListener() {
-            mPressingLongPressedHandler = new PressingLongPressedHandler();
-            mReleasingLongPressedHandler = new ReleasingLongPressedHandler();
-            mLongPressedHandler = mPressingLongPressedHandler;
-        }
-
         @Override
         public boolean onDown(MotionEvent e) {
             xMotionNotify(e);
@@ -62,7 +29,8 @@ public class XView extends View {
 
         @Override
         public void onLongPress(MotionEvent e) {
-            mLongPressedHandler.run();
+            mClient.xRightButtonPress();
+            mClient.xRightButtonRelease();
         }
 
         @Override
