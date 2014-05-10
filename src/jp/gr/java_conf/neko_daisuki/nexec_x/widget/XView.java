@@ -1,7 +1,6 @@
 package jp.gr.java_conf.neko_daisuki.nexec_x.widget;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.util.AttributeSet;
@@ -99,11 +98,7 @@ public class XView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Bitmap bitmap = mClient.xDraw();
-        if (bitmap == null) {
-            return;
-        }
-        canvas.drawBitmap(bitmap, mMatrix, null);
+        canvas.drawBitmap(mClient.xDraw(), mMatrix, null);
     }
 
     private void setScale(int scale) {
