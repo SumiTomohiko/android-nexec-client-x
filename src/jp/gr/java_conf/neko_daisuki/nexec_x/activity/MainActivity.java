@@ -19,6 +19,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.util.SparseArray;
@@ -47,6 +48,10 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         @Override
         public void run(SessionId savedSessionId) {
             mNexecClient.connect(savedSessionId);
+
+            if (savedSessionId.isNull()) {
+                showApplications();
+            }
         }
     }
 
@@ -218,18 +223,6 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         }
     }
 
-    private class NewSessionMenuProc implements MenuProc {
-
-        @Override
-        public void run(MenuItem item) {
-            mPressingLeftButton = mPressingRightButton = false;
-            invalidateX();
-
-            String tag = "applications";
-            new ApplicationFragment().show(getSupportFragmentManager(), tag);
-        }
-    }
-
     private abstract class BaseOnXInvalidateListener implements NexecClient.OnXInvalidateListener {
 
         @Override
@@ -279,6 +272,8 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
             }
             Log.i(LOG_TAG, s);
             //showToast(s);
+
+            showApplications();
         }
     }
 
@@ -364,7 +359,6 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         boolean isNull = mNexecClient.getSessionId().isNull();
-        menu.findItem(R.id.action_new_session).setEnabled(isNull);
         menu.findItem(R.id.action_quit_session).setEnabled(!isNull);
 
         menu.findItem(R.id.action_press_left_button).setVisible(!mPressingLeftButton);
@@ -415,7 +409,6 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
         mNexecClient.setOnExitListener(new OnExitListener());
         mNexecClient.setOnStderrListener(new OnStderrListener());
         mMenuProcs.put(R.id.action_quit_session, new QuitSessionMenuProc());
-        mMenuProcs.put(R.id.action_new_session, new NewSessionMenuProc());
         mMenuProcs.put(R.id.action_press_left_button,
                        new PressLeftButtonMenuProc());
         mMenuProcs.put(R.id.action_release_left_button,
@@ -559,5 +552,10 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
     private void invalidateX() {
         invalidateOptionsMenu();
         mView.invalidate();
+    }
+
+    private void showApplications() {
+        DialogFragment fragment = ApplicationFragment.newInstance();
+        fragment.show(getSupportFragmentManager(), "applications");
     }
 }

@@ -135,7 +135,6 @@ public class ApplicationFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Select an application");
         builder.setPositiveButton(R.string.positive, new OnClickListener());
-        builder.setNegativeButton(R.string.negative, null);
         builder.setView(view);
         return builder.create();
     }
