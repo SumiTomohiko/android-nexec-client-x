@@ -359,7 +359,7 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         boolean isNull = mNexecClient.getSessionId().isNull();
-        menu.findItem(R.id.action_quit_session).setEnabled(!isNull);
+        menu.findItem(R.id.action_quit_session).setVisible(!isNull);
 
         menu.findItem(R.id.action_press_left_button).setVisible(!mPressingLeftButton);
         menu.findItem(R.id.action_release_left_button).setVisible(mPressingLeftButton);
