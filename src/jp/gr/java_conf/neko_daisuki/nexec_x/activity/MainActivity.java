@@ -32,11 +32,11 @@ import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecClient;
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecHost;
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecUtil;
 import jp.gr.java_conf.neko_daisuki.nexec_x.R;
-import jp.gr.java_conf.neko_daisuki.nexec_x.fragment.ApplicationFragment;
+import jp.gr.java_conf.neko_daisuki.nexec_x.fragment.ApplicationsFragment;
 import jp.gr.java_conf.neko_daisuki.nexec_x.model.Application;
 import jp.gr.java_conf.neko_daisuki.nexec_x.widget.XView;
 
-public class MainActivity extends FragmentActivity implements ApplicationFragment.OnSelectedListener {
+public class MainActivity extends FragmentActivity implements ApplicationsFragment.OnSelectedListener {
 
     private interface AfterResumeProc {
 
@@ -370,7 +370,7 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
     }
 
     @Override
-    public void onSelected(ApplicationFragment fragment,
+    public void onSelected(ApplicationsFragment fragment,
                            Application application) {
         NexecClient.Settings settings = new NexecClient.Settings();
         settings.host = mHost.getHost();
@@ -555,7 +555,7 @@ public class MainActivity extends FragmentActivity implements ApplicationFragmen
     }
 
     private void showApplications() {
-        DialogFragment fragment = ApplicationFragment.newInstance();
+        DialogFragment fragment = ApplicationsFragment.newInstance();
         fragment.show(getSupportFragmentManager(), "applications");
     }
 }

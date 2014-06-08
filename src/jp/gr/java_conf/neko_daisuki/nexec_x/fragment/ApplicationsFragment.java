@@ -20,11 +20,11 @@ import android.widget.TextView;
 import jp.gr.java_conf.neko_daisuki.nexec_x.R;
 import jp.gr.java_conf.neko_daisuki.nexec_x.model.Application;
 
-public class ApplicationFragment extends DialogFragment {
+public class ApplicationsFragment extends DialogFragment {
 
     public interface OnSelectedListener {
 
-        public void onSelected(ApplicationFragment fragment,
+        public void onSelected(ApplicationsFragment fragment,
                                Application application);
     }
 
@@ -98,7 +98,7 @@ public class ApplicationFragment extends DialogFragment {
         @Override
         public void onClick(DialogInterface dialog, int which) {
             Application application = mApplications[mSelectedPosition];
-            mListener.onSelected(ApplicationFragment.this, application);
+            mListener.onSelected(ApplicationsFragment.this, application);
         }
     }
 
@@ -110,7 +110,7 @@ public class ApplicationFragment extends DialogFragment {
     private int mSelectedPosition = 0;
 
     public static DialogFragment newInstance() {
-        return new ApplicationFragment();
+        return new ApplicationsFragment();
     }
 
     @Override
