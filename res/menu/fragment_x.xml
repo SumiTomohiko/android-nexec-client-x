@@ -1,4 +1,5 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item
         android:id="@+id/action_quit_session"
         android:title="@string/action_quit_session"
@@ -36,10 +37,4 @@
         android:title="@string/action_zoom_out"
         android:icon="@drawable/ic_zoom_out"
         android:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/action_host_preference"
-        android:title="@string/action_host_preference"/>
-    <item
-        android:id="@+id/action_about_this_app"
-        android:title="@string/action_about_this_app"/>
 </menu>

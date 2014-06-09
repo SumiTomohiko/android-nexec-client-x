@@ -6,6 +6,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -13,15 +16,26 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import jp.gr.java_conf.neko_daisuki.android.util.MenuHandler;
 import jp.gr.java_conf.neko_daisuki.nexec_x.R;
 import jp.gr.java_conf.neko_daisuki.nexec_x.model.Application;
 
 public class ApplicationsFragment extends Fragment {
 
-    public interface OnSelectedListener {
+    public interface Listener {
 
         public void onSelected(ApplicationsFragment fragment,
                                Application application);
+        public void onHostPreference(ApplicationsFragment fragment);
+    }
+
+    private class HostPreferenceMenuProc implements MenuHandler.ItemHandler {
+
+        @Override
+        public boolean handle(MenuItem item) {
+            mListener.onHostPreference(ApplicationsFragment.this);
+            return true;
+        }
     }
 
     private class Adapter extends BaseAdapter {
@@ -78,7 +92,10 @@ public class ApplicationsFragment extends Fragment {
 
     // documents
     private Application[] mApplications;
-    private OnSelectedListener mListener;
+    private Listener mListener;
+
+    // helpers
+    private MenuHandler mMenuHandler = new MenuHandler();
 
     public static Fragment newInstance() {
         return new ApplicationsFragment();
@@ -87,12 +104,16 @@ public class ApplicationsFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        mListener = (OnSelectedListener)activity;
+        mListener = (Listener)activity;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        mMenuHandler.put(R.id.action_host_preference,
+                         new HostPreferenceMenuProc());
+
         mApplications = Application.list().toArray(new Application[0]);
         Arrays.sort(mApplications, new Application.CaptionComparator());
     }
@@ -105,5 +126,17 @@ public class ApplicationsFragment extends Fragment {
         view.setAdapter(new Adapter(inflater));
         view.setOnItemClickListener(new OnItemClickListener());
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_applications, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        mMenuHandler.handle(item);
+        return true;
     }
 }

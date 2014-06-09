@@ -34,12 +34,14 @@ import jp.gr.java_conf.neko_daisuki.android.nexec.client.share.SessionId;
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecClient;
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecHost;
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecUtil;
+import jp.gr.java_conf.neko_daisuki.android.util.ContextUtil;
+import jp.gr.java_conf.neko_daisuki.android.util.MenuHandler;
 import jp.gr.java_conf.neko_daisuki.nexec_x.R;
 import jp.gr.java_conf.neko_daisuki.nexec_x.fragment.ApplicationsFragment;
 import jp.gr.java_conf.neko_daisuki.nexec_x.fragment.XFragment;
 import jp.gr.java_conf.neko_daisuki.nexec_x.model.Application;
 
-public class MainActivity extends FragmentActivity implements ApplicationsFragment.OnSelectedListener, XFragment.OnInitializingViewListener { 
+public class MainActivity extends FragmentActivity implements ApplicationsFragment.Listener, XFragment.Listener { 
 
     private interface AfterResumeProc {
 
@@ -127,105 +129,12 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         }
     }
 
-    private interface MenuProc {
-
-        public void run(MenuItem item);
-    }
-
-    private class AboutMenuProc implements MenuProc {
+    private class AboutMenuProc implements MenuHandler.ItemHandler {
 
         @Override
-        public void run(MenuItem item) {
+        public boolean handle(MenuItem item) {
             AboutActivity.show(MainActivity.this);
-        }
-    }
-
-    private class PressRightButtonMenuProc implements MenuProc {
-
-        @Override
-        public void run(MenuItem item) {
-            mNexecClient.xRightButtonPress();
-            mPressingRightButton = true;
-            invalidateX();
-        }
-    }
-
-    private class ReleaseRightButtonMenuProc implements MenuProc {
-
-        @Override
-        public void run(MenuItem item) {
-            mNexecClient.xRightButtonRelease();
-            mPressingRightButton = false;
-            invalidateX();
-        }
-    }
-
-    private class PressLeftButtonMenuProc implements MenuProc {
-
-        @Override
-        public void run(MenuItem item) {
-            mNexecClient.xLeftButtonPress();
-            mPressingLeftButton = true;
-            invalidateX();
-        }
-    }
-
-    private class ReleaseLeftButtonMenuProc implements MenuProc {
-
-        @Override
-        public void run(MenuItem item) {
-            mNexecClient.xLeftButtonRelease();
-            mPressingLeftButton = false;
-            invalidateX();
-        }
-    }
-
-    private class QuitSessionMenuProc implements MenuProc {
-
-        @Override
-        public void run(MenuItem item) {
-            mNexecClient.quit();
-            invalidateOptionsMenu();
-            showFragment(ApplicationsFragment.newInstance());
-        }
-    }
-
-    private class HostPreferenceMenuProc implements MenuProc {
-
-        @Override
-        public void run(MenuItem item) {
-            int requestCode = REQUEST_HOST_PREFERENCE;
-            NexecUtil.startHostPreferenceActivity(MainActivity.this,
-                                                  requestCode, mHost.getHost(),
-                                                  mHost.getPort());
-        }
-    }
-
-    private abstract class ZoomMenuProc implements MenuProc {
-
-        public abstract void run(MenuItem item);
-
-        protected void showScale() {
-            XFragment fragment = getXFragment();
-            showShortToast(String.format("x%d", fragment.getScale()));
-        }
-    }
-
-    private class ZoomInMenuProc extends ZoomMenuProc {
-
-        @Override
-        public void run(MenuItem item) {
-            getXFragment().zoomIn();
-            showScale();
-        }
-    }
-
-    private class ZoomOutMenuProc extends ZoomMenuProc {
-
-        @Override
-        public void run(MenuItem item) {
-            getXFragment().zoomOut();
-            showScale();
+            return true;
         }
     }
 
@@ -306,13 +215,6 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         }
     }
 
-    private class ShortToaster extends Toaster {
-
-        public ShortToaster(String message) {
-            super(message, Toast.LENGTH_SHORT);
-        }
-    }
-
     private class OnStderrListener implements NexecClient.OnStderrListener {
 
         @Override
@@ -334,14 +236,12 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
     private List<Byte> mStderr = new ArrayList<Byte>();
 
     // views
-    private boolean mPressingLeftButton = false;
-    private boolean mPressingRightButton = false;
     private View mView;
     private Dialog mProgressDialog;
 
     // helpers
     private NexecClient mNexecClient;
-    private SparseArray<MenuProc> mMenuProcs = new SparseArray<MenuProc>();
+    private MenuHandler mMenuHandler = new MenuHandler();
     private ResultProcs mResultProcs = new ResultProcs();
     private AfterResumeProc mAfterResumeProc = new ConnectAfterResumeProc();
     private NexecClient.OnXInvalidateListener mFirstOnXInvalidateListener;
@@ -349,29 +249,13 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        mMenuProcs.get(item.getItemId()).run(item);
-        return true;
+        return mMenuHandler.handle(item);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        boolean isNull = mNexecClient.getSessionId().isNull();
-        menu.findItem(R.id.action_quit_session).setVisible(!isNull);
-
-        menu.findItem(R.id.action_press_left_button).setVisible(!isNull && !mPressingLeftButton);
-        menu.findItem(R.id.action_release_left_button).setVisible(!isNull && mPressingLeftButton);
-        menu.findItem(R.id.action_press_right_button).setVisible(!isNull && !mPressingRightButton);
-        menu.findItem(R.id.action_release_right_button).setVisible(!isNull && mPressingRightButton);
-        menu.findItem(R.id.action_zoom_in).setVisible(!isNull);
-        menu.findItem(R.id.action_zoom_out).setVisible(!isNull);
-
+        getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
     }
 
@@ -391,8 +275,21 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
     }
 
     @Override
+    public void onHostPreference(ApplicationsFragment fragment) {
+        NexecUtil.startHostPreferenceActivity(this, REQUEST_HOST_PREFERENCE,
+                                              mHost.getHost(), mHost.getPort());
+    }
+
+    @Override
     public NexecClient onInitializingView(XFragment fragment) {
         return mNexecClient;
+    }
+
+    @Override
+    public void onQuit(XFragment fragment) {
+        mNexecClient.quit();
+        showFragment(ApplicationsFragment.newInstance());
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -419,20 +316,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         mNexecClient = new NexecClient(this);
         mNexecClient.setOnExitListener(new OnExitListener());
         mNexecClient.setOnStderrListener(new OnStderrListener());
-        mMenuProcs.put(R.id.action_quit_session, new QuitSessionMenuProc());
-        mMenuProcs.put(R.id.action_press_left_button,
-                       new PressLeftButtonMenuProc());
-        mMenuProcs.put(R.id.action_release_left_button,
-                       new ReleaseLeftButtonMenuProc());
-        mMenuProcs.put(R.id.action_press_right_button,
-                       new PressRightButtonMenuProc());
-        mMenuProcs.put(R.id.action_release_right_button,
-                       new ReleaseRightButtonMenuProc());
-        mMenuProcs.put(R.id.action_zoom_in, new ZoomInMenuProc());
-        mMenuProcs.put(R.id.action_zoom_out, new ZoomOutMenuProc());
-        mMenuProcs.put(R.id.action_host_preference,
-                       new HostPreferenceMenuProc());
-        mMenuProcs.put(R.id.action_about_this_app, new AboutMenuProc());
+        mMenuHandler.put(R.id.action_about_this_app, new AboutMenuProc());
         mResultProcs.put(REQUEST_CONFIRM, RESULT_OK, new ConfirmResultProc());
         mResultProcs.put(REQUEST_HOST_PREFERENCE, RESULT_OK,
                          new HostPreferenceResultProc());
@@ -472,7 +356,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
             }
         }
         catch (IOException e) {
-            handleException("read session id", e);
+            ContextUtil.showException(this, "Cannot read the session id", e);
             return SessionId.NULL;
         }
     }
@@ -483,7 +367,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
             out = openFileOutput(PATH_SESSION_ID, 0);
         }
         catch (FileNotFoundException e) {
-            handleException("open session id", e);
+            ContextUtil.showException(this, "Cannot open the session id", e);
             return;
         }
         try {
@@ -507,21 +391,12 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
             }
         }
         catch (IOException e) {
-            handleException("write session id", e);
+            ContextUtil.showException(this, "Cannot write session id", e);
         }
-    }
-
-    private void showShortToast(String msg) {
-        runOnUiThread(new ShortToaster(msg));
     }
 
     private void showToast(String msg) {
         runOnUiThread(new LongToaster(msg));
-    }
-
-    private void handleException(String msg, Throwable e) {
-        e.printStackTrace();
-        showToast(String.format("%s: %s", msg, e.getMessage()));
     }
 
     private String getApplicationDirectoryPath() {
@@ -542,7 +417,8 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
             NexecUtil.writeHostToJson(path, host);
         }
         catch (IOException e) {
-            handleException("Cannot write host information", e);
+            String msg = "Cannot write the host information";
+            ContextUtil.showException(this, msg, e);
         }
     }
 
@@ -554,14 +430,10 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
             return new NexecHost(DEFAULT_HOST);
         }
         catch (IOException e) {
-            handleException("Cannot read host information", e);
+            String msg = "Cannot read the host information";
+            ContextUtil.showException(this, msg, e);
             return new NexecHost(DEFAULT_HOST);
         }
-    }
-
-    private void invalidateX() {
-        invalidateOptionsMenu();
-        getXFragment().postInvalidate();
     }
 
     private void showFragment(Fragment fragment) {
