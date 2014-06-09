@@ -202,7 +202,6 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         protected void showScale() {
             showShortToast(String.format("x%d", mView.getScale()));
         }
-
     }
 
     private class ZoomInMenuProc extends ZoomMenuProc {
