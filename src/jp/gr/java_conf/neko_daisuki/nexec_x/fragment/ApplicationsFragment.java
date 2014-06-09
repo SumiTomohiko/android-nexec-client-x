@@ -3,24 +3,20 @@ package jp.gr.java_conf.neko_daisuki.nexec_x.fragment;
 import java.util.Arrays;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import jp.gr.java_conf.neko_daisuki.nexec_x.R;
 import jp.gr.java_conf.neko_daisuki.nexec_x.model.Application;
 
-public class ApplicationsFragment extends DialogFragment {
+public class ApplicationsFragment extends Fragment {
 
     public interface OnSelectedListener {
 
@@ -29,21 +25,6 @@ public class ApplicationsFragment extends DialogFragment {
     }
 
     private class Adapter extends BaseAdapter {
-
-        private class OnClickListener implements View.OnClickListener {
-
-            private int mPosition;
-
-            public OnClickListener(int position) {
-                mPosition = position;
-            }
-
-            @Override
-            public void onClick(View v) {
-                mSelectedPosition = mPosition;
-                notifyDataSetChanged();
-            }
-        }
 
         private LayoutInflater mInflater;
 
@@ -72,14 +53,6 @@ public class ApplicationsFragment extends DialogFragment {
             Application application = mApplications[position];
             setText(view, R.id.caption_text, application.getCaption());
             setText(view, R.id.description_text, application.getDescription());
-            OnClickListener listener = new OnClickListener(position);
-            view.setOnClickListener(listener);
-
-            int id = R.id.checkbox;
-            CompoundButton checkable = (CompoundButton)view.findViewById(id);
-            checkable.setChecked(position == mSelectedPosition);
-            checkable.setOnClickListener(listener);
-
             return view;
         }
 
@@ -93,11 +66,12 @@ public class ApplicationsFragment extends DialogFragment {
         }
     }
 
-    private class OnClickListener implements DialogInterface.OnClickListener {
+    private class OnItemClickListener implements AdapterView.OnItemClickListener {
 
         @Override
-        public void onClick(DialogInterface dialog, int which) {
-            Application application = mApplications[mSelectedPosition];
+        public void onItemClick(AdapterView<?> parent, View view, int position,
+                                long id) {
+            Application application = mApplications[position];
             mListener.onSelected(ApplicationsFragment.this, application);
         }
     }
@@ -106,10 +80,7 @@ public class ApplicationsFragment extends DialogFragment {
     private Application[] mApplications;
     private OnSelectedListener mListener;
 
-    // views
-    private int mSelectedPosition = 0;
-
-    public static DialogFragment newInstance() {
+    public static Fragment newInstance() {
         return new ApplicationsFragment();
     }
 
@@ -120,22 +91,19 @@ public class ApplicationsFragment extends DialogFragment {
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         mApplications = Application.list().toArray(new Application[0]);
         Arrays.sort(mApplications, new Application.CaptionComparator());
+    }
 
-        Context context = getActivity();
-        String name = Context.LAYOUT_INFLATER_SERVICE;
-        Object service = context.getSystemService(name);
-        LayoutInflater inflater = (LayoutInflater)service;
-
-        ListView view = new ListView(context);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        int layout = R.layout.fragment_applications;
+        ListView view = (ListView)inflater.inflate(layout, null);
         view.setAdapter(new Adapter(inflater));
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Select an application");
-        builder.setPositiveButton(R.string.positive, new OnClickListener());
-        builder.setView(view);
-        return builder.create();
+        view.setOnItemClickListener(new OnItemClickListener());
+        return view;
     }
 }

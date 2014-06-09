@@ -19,12 +19,15 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.share.SessionId;
@@ -33,10 +36,10 @@ import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecHost;
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecUtil;
 import jp.gr.java_conf.neko_daisuki.nexec_x.R;
 import jp.gr.java_conf.neko_daisuki.nexec_x.fragment.ApplicationsFragment;
+import jp.gr.java_conf.neko_daisuki.nexec_x.fragment.XFragment;
 import jp.gr.java_conf.neko_daisuki.nexec_x.model.Application;
-import jp.gr.java_conf.neko_daisuki.nexec_x.widget.XView;
 
-public class MainActivity extends FragmentActivity implements ApplicationsFragment.OnSelectedListener {
+public class MainActivity extends FragmentActivity implements ApplicationsFragment.OnSelectedListener, XFragment.OnInitializingViewListener { 
 
     private interface AfterResumeProc {
 
@@ -49,9 +52,10 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         public void run(SessionId savedSessionId) {
             mNexecClient.connect(savedSessionId);
 
-            if (savedSessionId.isNull()) {
-                showApplications();
-            }
+            boolean isRunning = !savedSessionId.isNull();
+            Fragment f = isRunning ? XFragment.newInstance()
+                                   : ApplicationsFragment.newInstance();
+            showFragment(f);
         }
     }
 
@@ -94,6 +98,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
                 mNexecClient.setOnXInvalidateListener(mFirstOnXInvalidateListener);
                 mNexecClient.execute(NexecUtil.getSessionId(mData));
                 invalidateOptionsMenu();
+                showFragment(XFragment.newInstance());
             }
         }
 
@@ -180,7 +185,8 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         @Override
         public void run(MenuItem item) {
             mNexecClient.quit();
-            invalidateX();
+            invalidateOptionsMenu();
+            showFragment(ApplicationsFragment.newInstance());
         }
     }
 
@@ -200,7 +206,8 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         public abstract void run(MenuItem item);
 
         protected void showScale() {
-            showShortToast(String.format("x%d", mView.getScale()));
+            XFragment fragment = getXFragment();
+            showShortToast(String.format("x%d", fragment.getScale()));
         }
     }
 
@@ -208,7 +215,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
 
         @Override
         public void run(MenuItem item) {
-            mView.zoomIn();
+            getXFragment().zoomIn();
             showScale();
         }
     }
@@ -217,7 +224,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
 
         @Override
         public void run(MenuItem item) {
-            mView.zoomOut();
+            getXFragment().zoomOut();
             showScale();
         }
     }
@@ -227,7 +234,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         @Override
         public void onInvalidate(int left, int top, int right, int bottom) {
             preInvalidate();
-            mView.postInvalidate();
+            getXFragment().postInvalidate();
         }
 
         protected abstract void preInvalidate();
@@ -271,8 +278,6 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
             }
             Log.i(LOG_TAG, s);
             //showToast(s);
-
-            showApplications();
         }
     }
 
@@ -331,7 +336,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
     // views
     private boolean mPressingLeftButton = false;
     private boolean mPressingRightButton = false;
-    private XView mView;
+    private View mView;
     private Dialog mProgressDialog;
 
     // helpers
@@ -360,10 +365,12 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         boolean isNull = mNexecClient.getSessionId().isNull();
         menu.findItem(R.id.action_quit_session).setVisible(!isNull);
 
-        menu.findItem(R.id.action_press_left_button).setVisible(!mPressingLeftButton);
-        menu.findItem(R.id.action_release_left_button).setVisible(mPressingLeftButton);
-        menu.findItem(R.id.action_press_right_button).setVisible(!mPressingRightButton);
-        menu.findItem(R.id.action_release_right_button).setVisible(mPressingRightButton);
+        menu.findItem(R.id.action_press_left_button).setVisible(!isNull && !mPressingLeftButton);
+        menu.findItem(R.id.action_release_left_button).setVisible(!isNull && mPressingLeftButton);
+        menu.findItem(R.id.action_press_right_button).setVisible(!isNull && !mPressingRightButton);
+        menu.findItem(R.id.action_release_right_button).setVisible(!isNull && mPressingRightButton);
+        menu.findItem(R.id.action_zoom_in).setVisible(!isNull);
+        menu.findItem(R.id.action_zoom_out).setVisible(!isNull);
 
         return true;
     }
@@ -381,6 +388,11 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         settings.xHeight = mView.getHeight();
 
         mNexecClient.request(settings, REQUEST_CONFIRM);
+    }
+
+    @Override
+    public NexecClient onInitializingView(XFragment fragment) {
+        return mNexecClient;
     }
 
     @Override
@@ -433,8 +445,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         mFirstOnXInvalidateListener = new FirstOnXInvalidateListener();
         mOnXInvalidateListener = new OnXInvalidateListener();
 
-        mView = (XView)findViewById(R.id.x_view);
-        mView.setNexecClient(mNexecClient);
+        mView = findViewById(R.id.fragment_container);
     }
 
     @Override
@@ -550,11 +561,17 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
 
     private void invalidateX() {
         invalidateOptionsMenu();
-        mView.invalidate();
+        getXFragment().postInvalidate();
     }
 
-    private void showApplications() {
-        DialogFragment fragment = ApplicationsFragment.newInstance();
-        fragment.show(getSupportFragmentManager(), "applications");
+    private void showFragment(Fragment fragment) {
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.commit();
+    }
+
+    private XFragment getXFragment() {
+        return (XFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_container);
     }
 }
