@@ -22,6 +22,7 @@ public class Application {
         Collection<Application> apps = new HashSet<Application>();
 
         apps.add(new Application("Inkscape", "inkscape", "SVG editor"));
+        apps.add(new Application("gedit", "gedit", "Text editor"));
         apps.add(new Application("xmine", "xmine", "Mine sweeper"));
 
         return apps;
