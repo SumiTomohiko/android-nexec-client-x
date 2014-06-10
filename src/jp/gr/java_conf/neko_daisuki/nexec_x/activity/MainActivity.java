@@ -176,7 +176,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         @Override
         public void onServiceError(NexecClient nexecClient, String message) {
             ActivityUtil.showToast(MainActivity.this, message);
-            quit();
+            mProgressDialog.dismiss();
         }
     }
 
@@ -278,7 +278,10 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
 
     @Override
     public void onQuit(XFragment fragment) {
-        quit();
+        mNexecClient.quit();
+        mProgressDialog.dismiss();
+        showFragment(ApplicationsFragment.newInstance());
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -431,12 +434,5 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
 
     private XFragment getXFragment() {
         return (XFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-    }
-
-    private void quit() {
-        mNexecClient.quit();
-        mProgressDialog.dismiss();
-        showFragment(ApplicationsFragment.newInstance());
-        invalidateOptionsMenu();
     }
 }
