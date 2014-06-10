@@ -1,5 +1,7 @@
 package jp.gr.java_conf.neko_daisuki.nexec_x.fragment;
 
+import java.util.Locale;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -82,7 +84,8 @@ public class XFragment extends Fragment {
         public abstract boolean handle(MenuItem item);
 
         protected void showScale() {
-            String msg = String.format("x%d", mView.getScale());
+            Locale locale = Locale.getDefault();
+            String msg = String.format(locale, "x%d", mView.getScale());
             ContextUtil.showShortToast(getActivity(), msg);
         }
     }
