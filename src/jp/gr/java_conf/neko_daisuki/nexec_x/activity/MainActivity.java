@@ -13,6 +13,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -28,12 +29,12 @@ import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.share.SessionId;
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecClient;
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecHost;
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecUtil;
+import jp.gr.java_conf.neko_daisuki.android.util.ActivityUtil;
 import jp.gr.java_conf.neko_daisuki.android.util.ContextUtil;
 import jp.gr.java_conf.neko_daisuki.android.util.MenuHandler;
 import jp.gr.java_conf.neko_daisuki.nexec_x.R;
@@ -165,11 +166,27 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         }
     }
 
+    private class OnErrorListener implements NexecClient.OnErrorListener {
+
+        @Override
+        public void onError(NexecClient nexecClient, Throwable e) {
+            ActivityUtil.showException(MainActivity.this, "error", e);
+        }
+
+        @Override
+        public void onServiceError(NexecClient nexecClient, String message) {
+            ActivityUtil.showToast(MainActivity.this, message);
+            quit();
+        }
+    }
+
     private class OnExitListener implements NexecClient.OnExitListener {
 
         @Override
         public void onExit(NexecClient nexecClient, int exitCode) {
-            showToast(String.format("exit: %d", exitCode));
+            Locale locale = Locale.getDefault();
+            String msg = String.format(locale, "exit: %d", exitCode);
+            ActivityUtil.showToast(MainActivity.this, msg);
             mProgressDialog.dismiss();
 
             int size = mStderr.size();
@@ -186,32 +203,6 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
                 return;
             }
             Log.i(LOG_TAG, s);
-            //showToast(s);
-        }
-    }
-
-    private class Toaster implements Runnable {
-
-        private String mMessage;
-        private int mDuration;
-
-        public Toaster(String message, int duration) {
-            mMessage = message;
-            mDuration = duration;
-        }
-
-        @Override
-        public void run() {
-            String name = getString(getApplicationInfo().labelRes);
-            String s = String.format("%s: %s", name, mMessage);
-            Toast.makeText(MainActivity.this, s, mDuration).show();
-        }
-    }
-
-    private class LongToaster extends Toaster {
-
-        public LongToaster(String message) {
-            super(message, Toast.LENGTH_LONG);
         }
     }
 
@@ -287,9 +278,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
 
     @Override
     public void onQuit(XFragment fragment) {
-        mNexecClient.quit();
-        showFragment(ApplicationsFragment.newInstance());
-        invalidateOptionsMenu();
+        quit();
     }
 
     @Override
@@ -315,6 +304,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
 
         mNexecClient = new NexecClient(this);
         mNexecClient.setOnExitListener(new OnExitListener());
+        mNexecClient.setOnErrorListener(new OnErrorListener());
         mNexecClient.setOnStderrListener(new OnStderrListener());
         mMenuHandler.put(R.id.action_about_this_app, new AboutMenuProc());
         mResultProcs.put(REQUEST_CONFIRM, RESULT_OK, new ConfirmResultProc());
@@ -395,10 +385,6 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         }
     }
 
-    private void showToast(String msg) {
-        runOnUiThread(new LongToaster(msg));
-    }
-
     private String getApplicationDirectoryPath() {
         String fmt = "%s/.android-nexec-client-x";
         return String.format(fmt, Environment.getExternalStorageDirectory());
@@ -445,5 +431,12 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
 
     private XFragment getXFragment() {
         return (XFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+    }
+
+    private void quit() {
+        mNexecClient.quit();
+        mProgressDialog.dismiss();
+        showFragment(ApplicationsFragment.newInstance());
+        invalidateOptionsMenu();
     }
 }
