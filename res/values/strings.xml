@@ -11,6 +11,7 @@
     <string name="action_zoom_out">Zoom out</string>
     <string name="action_quit_session">Quit this session</string>
     <string name="action_host_preference">Host preference&#8230;</string>
+    <string name="action_view_stderr">View stderr&#8230;</string>
 
     <string name="img_zoom_in">Zoom in</string>
     <string name="img_zoom_out">Zoom out</string>

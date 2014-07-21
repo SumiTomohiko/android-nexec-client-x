@@ -23,6 +23,7 @@ public class XFragment extends Fragment {
     public interface Listener {
 
         public NexecClient onInitializingView(XFragment fragment);
+        public void onViewStderr(XFragment fragment);
         public void onQuit(XFragment fragment);
     }
 
@@ -110,6 +111,15 @@ public class XFragment extends Fragment {
         }
     }
 
+    private class ViewStderrMenuProc implements MenuHandler.ItemHandler {
+
+        @Override
+        public boolean handle(MenuItem item) {
+            mListener.onViewStderr(XFragment.this);
+            return true;
+        }
+    }
+
     private Listener mListener;
     private boolean mPressingLeftButton = false;
     private boolean mPressingRightButton = false;
@@ -146,6 +156,7 @@ public class XFragment extends Fragment {
                          new ReleaseRightButtonMenuProc());
         mMenuHandler.put(R.id.action_zoom_in, new ZoomInMenuProc());
         mMenuHandler.put(R.id.action_zoom_out, new ZoomOutMenuProc());
+        mMenuHandler.put(R.id.action_view_stderr, new ViewStderrMenuProc());
     }
 
     @Override

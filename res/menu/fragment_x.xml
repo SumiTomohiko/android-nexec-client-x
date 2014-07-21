@@ -37,4 +37,8 @@
         android:title="@string/action_zoom_out"
         android:icon="@drawable/ic_zoom_out"
         android:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_view_stderr"
+        android:title="@string/action_view_stderr"
+        android:showAsAction="never"/>
 </menu>

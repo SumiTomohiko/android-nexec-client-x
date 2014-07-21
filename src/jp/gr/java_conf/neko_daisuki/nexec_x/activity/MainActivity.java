@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -24,7 +23,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,10 +37,11 @@ import jp.gr.java_conf.neko_daisuki.android.util.ContextUtil;
 import jp.gr.java_conf.neko_daisuki.android.util.MenuHandler;
 import jp.gr.java_conf.neko_daisuki.nexec_x.R;
 import jp.gr.java_conf.neko_daisuki.nexec_x.fragment.ApplicationsFragment;
+import jp.gr.java_conf.neko_daisuki.nexec_x.fragment.StderrFragment;
 import jp.gr.java_conf.neko_daisuki.nexec_x.fragment.XFragment;
 import jp.gr.java_conf.neko_daisuki.nexec_x.model.Application;
 
-public class MainActivity extends FragmentActivity implements ApplicationsFragment.Listener, XFragment.Listener { 
+public class MainActivity extends FragmentActivity implements ApplicationsFragment.Listener, StderrFragment.Listener, XFragment.Listener {
 
     private interface AfterResumeProc {
 
@@ -188,21 +187,6 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
             String msg = String.format(locale, "exit: %d", exitCode);
             ActivityUtil.showToast(MainActivity.this, msg);
             mProgressDialog.dismiss();
-
-            int size = mStderr.size();
-            byte[] buf = new byte[size];
-            for (int i = 0; i < size; i++) {
-                buf[i] = mStderr.get(i).byteValue();
-            }
-            String s;
-            try {
-                s = new String(buf, "UTF-8");
-            }
-            catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-                return;
-            }
-            Log.i(LOG_TAG, s);
         }
     }
 
@@ -220,7 +204,6 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
     private static final int REQUEST_CONFIRM = 42;
     private static final int REQUEST_HOST_PREFERENCE = 43;
     private static final String DEFAULT_HOST = "neko-daisuki.ddo.jp";
-    private static final String LOG_TAG = "activity";
 
     // documents
     private NexecHost mHost;
@@ -282,6 +265,22 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         mProgressDialog.dismiss();
         showFragment(ApplicationsFragment.newInstance());
         invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onViewStderr(XFragment fragment) {
+        FragmentManager manager = getSupportFragmentManager();
+        StderrFragment.newInstance().show(manager, null);
+    }
+
+    @Override
+    public byte[] onShowStderr(StderrFragment fragment) {
+        int size = mStderr.size();
+        byte[] data = new byte[size];
+        for (int i = 0; i < size; i++) {
+            data[i] = mStderr.get(i);
+        }
+        return data;
     }
 
     @Override
