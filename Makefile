@@ -2,4 +2,4 @@
 ANT=	ant
 
 icon:
-	@$(ANT) icon
+	@cd app/src/main && $(ANT) icon
