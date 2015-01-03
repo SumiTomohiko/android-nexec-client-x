@@ -9,6 +9,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/android-nexec-client-share" />
+            <option value="$PROJECT_DIR$/android-nexec-client-util" />
             <option value="$PROJECT_DIR$/app" />
           </set>
         </option>

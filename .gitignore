@@ -3,6 +3,8 @@
 .gradle
 /.idea/libraries
 /.idea/workspace.xml
+/android-nexec-client-share
+/android-nexec-client-util
 /app/src/main/ic_launcher-web.png
 /app/src/main/res/drawable-*dpi/ic_launcher.png
 /app/src/main/res/drawable-*dpi/ic_left_button.png
