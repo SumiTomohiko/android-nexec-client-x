@@ -236,12 +236,16 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
     @Override
     public void onSelected(ApplicationsFragment fragment,
                            Application application) {
+        File storageDir = Environment.getExternalStorageDirectory();
+        String home = String.format("%s/nexec", storageDir.getAbsolutePath());
+        new File(home).mkdirs();
+
         NexecClient.Settings settings = new NexecClient.Settings();
         settings.host = mHost.getHost();
         settings.port = mHost.getPort();
         settings.args = application.getArguments();
         settings.addEnvironment("DISPLAY", ":0");
-        settings.files = new String[0];
+        settings.files = new String[] { String.format("%s/**", home) };
         settings.xWidth = mView.getWidth();
         settings.xHeight = mView.getHeight();
 
