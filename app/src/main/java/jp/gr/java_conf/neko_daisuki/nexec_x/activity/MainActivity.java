@@ -244,6 +244,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         settings.host = mHost.getHost();
         settings.port = mHost.getPort();
         settings.args = application.getArguments();
+        settings.addLink(home, "/home/fsyscall");
         settings.addEnvironment("DISPLAY", ":0");
         settings.files = new String[] { String.format("%s/**", home) };
         settings.xWidth = mView.getWidth();
