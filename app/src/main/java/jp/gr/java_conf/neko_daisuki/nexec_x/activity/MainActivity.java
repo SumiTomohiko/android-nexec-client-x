@@ -247,6 +247,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         settings.addLink(home, "/home/fsyscall");
         settings.addEnvironment("DISPLAY", ":0");
         settings.files = new String[] { String.format("%s/**", home) };
+        settings.x = true;
         settings.xWidth = mView.getWidth();
         settings.xHeight = mView.getHeight();
 
