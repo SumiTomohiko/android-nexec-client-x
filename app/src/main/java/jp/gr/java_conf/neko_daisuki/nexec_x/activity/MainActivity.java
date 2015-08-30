@@ -246,6 +246,8 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         settings.args = application.getArguments();
         settings.addLink(home, "/home/fsyscall");
         settings.addEnvironment("DISPLAY", ":0");
+        // If you want to see debug output of dbus-launch, enable DBUS_VERBOSE.
+        //settings.addEnvironment("DBUS_VERBOSE", "yes");
         settings.files = new String[] { String.format("%s/**", home) };
         settings.x = true;
         settings.xWidth = mView.getWidth();
