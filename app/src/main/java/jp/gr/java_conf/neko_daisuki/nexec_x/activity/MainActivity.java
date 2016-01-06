@@ -236,19 +236,28 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
     @Override
     public void onSelected(ApplicationsFragment fragment,
                            Application application) {
-        File storageDir = Environment.getExternalStorageDirectory();
-        String home = String.format("%s/nexec", storageDir.getAbsolutePath());
-        new File(home).mkdirs();
+        File storage = Environment.getExternalStorageDirectory();
+        String appDir = String.format("%s/nexec", storage.getAbsolutePath());
+        String homeDir = String.format("%s/home", appDir);
+        new File(homeDir).mkdirs();
+        String tmpDir = String.format("%s/tmp", appDir);
+        new File(tmpDir).mkdirs();
 
         NexecClient.Settings settings = new NexecClient.Settings();
         settings.host = mHost.getHost();
         settings.port = mHost.getPort();
         settings.args = application.getArguments();
-        settings.addLink(home, "/home/fsyscall");
+        settings.addLink(homeDir, "/home/fsyscall");
+        settings.addLink(tmpDir, "/tmp");
         settings.addEnvironment("DISPLAY", ":0");
         // If you want to see debug output of dbus-launch, enable DBUS_VERBOSE.
-        //settings.addEnvironment("DBUS_VERBOSE", "yes");
-        settings.files = new String[] { String.format("%s/**", home) };
+        settings.addEnvironment("DBUS_VERBOSE", "1");
+        settings.addEnvironment("G_DBUS_DEBUG", "all");
+        settings.addEnvironment("G_MAIN_POLL_DEBUG", "1");
+        settings.files = new String[] {
+                String.format("%s/**", homeDir),
+                String.format("%s/**", tmpDir)
+        };
         settings.x = true;
         settings.xWidth = mView.getWidth();
         settings.xHeight = mView.getHeight();
