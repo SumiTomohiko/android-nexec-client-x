@@ -256,6 +256,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         settings.addEnvironment("G_MAIN_POLL_DEBUG", "1");
         settings.files = new String[] {
                 String.format("%s/**", homeDir),
+                tmpDir,
                 String.format("%s/**", tmpDir)
         };
         settings.x = true;
