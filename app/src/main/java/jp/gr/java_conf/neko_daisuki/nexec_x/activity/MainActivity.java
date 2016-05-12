@@ -36,6 +36,7 @@ import jp.gr.java_conf.neko_daisuki.android.util.ActivityUtil;
 import jp.gr.java_conf.neko_daisuki.android.util.ContextUtil;
 import jp.gr.java_conf.neko_daisuki.android.util.MenuHandler;
 import jp.gr.java_conf.neko_daisuki.nexec_x.R;
+import jp.gr.java_conf.neko_daisuki.nexec_x.SettingsBuilder;
 import jp.gr.java_conf.neko_daisuki.nexec_x.fragment.ApplicationsFragment;
 import jp.gr.java_conf.neko_daisuki.nexec_x.fragment.StderrFragment;
 import jp.gr.java_conf.neko_daisuki.nexec_x.fragment.XFragment;
@@ -243,25 +244,14 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         String tmpDir = String.format("%s/tmp", appDir);
         new File(tmpDir).mkdirs();
 
-        NexecClient.Settings settings = new NexecClient.Settings();
-        settings.host = mHost.getHost();
-        settings.port = mHost.getPort();
-        settings.args = application.getArguments();
-        settings.addLink(homeDir, "/home/fsyscall");
-        settings.addLink(tmpDir, "/tmp");
-        settings.addEnvironment("DISPLAY", ":0");
-        // If you want to see debug output of dbus-launch, enable DBUS_VERBOSE.
-        settings.addEnvironment("DBUS_VERBOSE", "1");
-        settings.addEnvironment("G_DBUS_DEBUG", "all");
-        settings.addEnvironment("G_MAIN_POLL_DEBUG", "1");
-        settings.files = new String[] {
-                String.format("%s/**", homeDir),
-                tmpDir,
-                String.format("%s/**", tmpDir)
-        };
-        settings.x = true;
-        settings.xWidth = mView.getWidth();
-        settings.xHeight = mView.getHeight();
+        String[] args = application.getArguments();
+        int width = mView.getWidth();
+        int height = mView.getHeight();
+        NexecClient.Settings settings = SettingsBuilder.build(mHost.getHost(),
+                                                              mHost.getPort(),
+                                                              args, homeDir,
+                                                              tmpDir, width,
+                                                              height);
 
         mNexecClient.request(settings, REQUEST_CONFIRM);
     }
