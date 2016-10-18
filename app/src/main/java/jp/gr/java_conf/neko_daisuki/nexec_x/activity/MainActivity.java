@@ -239,7 +239,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
                            Application application) {
         File storage = Environment.getExternalStorageDirectory();
         String appDir = String.format("%s/nexec", storage.getAbsolutePath());
-        String homeDir = String.format("%s/home", appDir);
+        String homeDir = String.format("%s/usr/home/fsyscall", appDir);
         new File(homeDir).mkdirs();
         String tmpDir = String.format("%s/tmp", appDir);
         new File(tmpDir).mkdirs();
@@ -249,9 +249,8 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         int height = mView.getHeight();
         NexecClient.Settings settings = SettingsBuilder.build(mHost.getHost(),
                                                               mHost.getPort(),
-                                                              args, homeDir,
-                                                              tmpDir, width,
-                                                              height);
+                                                              args, appDir,
+                                                              width, height);
 
         mNexecClient.request(settings, REQUEST_CONFIRM);
     }

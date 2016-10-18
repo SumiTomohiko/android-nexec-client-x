@@ -7,20 +7,18 @@ public class SettingsBuilder {
     private static final boolean DEBUGGING = false;
 
     public static NexecClient.Settings build(String host, int port,
-                                             String[] args, String homeDir,
-                                             String tmpDir, int width,
-                                             int height) {
+                                             String[] args, String rootDir,
+                                             int width, int height) {
         NexecClient.Settings settings = new NexecClient.Settings();
         settings.host = host;
         settings.port = port;
         settings.args = args;
-        settings.addLink(homeDir, "/home/fsyscall");
-        settings.addLink(tmpDir, "/tmp");
+        settings.addLink(rootDir, "/");
+        settings.addLink(String.format("%s/usr/home", rootDir), "/home");
         settings.addEnvironment("DISPLAY",":0");
         settings.files = new String[] {
-            String.format("%s/**", homeDir),
-            tmpDir,
-            String.format("%s/**", tmpDir)
+            rootDir,
+            String.format("%s/**", rootDir)
         };
         settings.x = true;
         settings.xWidth = width;
