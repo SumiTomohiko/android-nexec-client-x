@@ -16,6 +16,7 @@ import java.util.Locale;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -201,6 +202,14 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         }
     }
 
+    private class ProgressCancelListener implements DialogInterface.OnClickListener {
+
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            quit();
+        }
+    }
+
     private static final String PATH_SESSION_ID = "session_id";
     private static final int REQUEST_CONFIRM = 42;
     private static final int REQUEST_HOST_PREFERENCE = 43;
@@ -268,10 +277,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
 
     @Override
     public void onQuit(XFragment fragment) {
-        mNexecClient.quit();
-        mProgressDialog.dismiss();
-        showFragment(ApplicationsFragment.newInstance());
-        invalidateOptionsMenu();
+        quit();
     }
 
     @Override
@@ -321,6 +327,8 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
                          new HostPreferenceResultProc());
         ProgressDialog dialog = new ProgressDialog(this);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Cancel",
+                         new ProgressCancelListener());
         dialog.setCancelable(false);
         dialog.setTitle("Please wait");
         dialog.setMessage("Initializing X...");
@@ -441,5 +449,12 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
 
     private XFragment getXFragment() {
         return (XFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+    }
+
+    private void quit() {
+        mNexecClient.quit();
+        mProgressDialog.dismiss();
+        showFragment(ApplicationsFragment.newInstance());
+        invalidateOptionsMenu();
     }
 }
