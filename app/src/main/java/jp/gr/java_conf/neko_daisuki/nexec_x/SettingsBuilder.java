@@ -16,6 +16,7 @@ public class SettingsBuilder {
         settings.addLink(rootDir, "/");
         settings.addLink(String.format("%s/usr/home", rootDir), "/home");
         settings.addEnvironment("DISPLAY",":0");
+        settings.addEnvironment("HOME", "/home/fsyscall");
         settings.files = new String[] {
             rootDir,
             String.format("%s/**", rootDir)
