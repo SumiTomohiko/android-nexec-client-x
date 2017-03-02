@@ -1,5 +1,9 @@
 package jp.gr.java_conf.neko_daisuki.nexec_x;
 
+import android.os.Environment;
+
+import java.io.File;
+
 import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecClient;
 
 public class SettingsBuilder {
@@ -13,13 +17,17 @@ public class SettingsBuilder {
         settings.host = host;
         settings.port = port;
         settings.args = args;
+
+        File sdcard = Environment.getExternalStorageDirectory();
+        String sdcardPath = sdcard.getAbsolutePath();
         settings.addLink(rootDir, "/");
         settings.addLink(String.format("%s/usr/home", rootDir), "/home");
+        settings.addLink(sdcardPath, "/usr/home/fsyscall/sdcard");
         settings.addEnvironment("DISPLAY", ":0");
         settings.addEnvironment("HOME", "/home/fsyscall");
         settings.files = new String[] {
-            rootDir,
-            String.format("%s/**", rootDir)
+            sdcardPath,
+            String.format("%s/**", sdcardPath)
         };
         settings.x = true;
         settings.xWidth = width;

@@ -250,6 +250,8 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         String appDir = String.format("%s/nexec", storage.getAbsolutePath());
         String homeDir = String.format("%s/usr/home/fsyscall", appDir);
         new File(homeDir).mkdirs();
+        String sdcardDir = String.format("%s/sdcard", homeDir);
+        new File(sdcardDir).mkdirs();
         String tmpDir = String.format("%s/tmp", appDir);
         new File(tmpDir).mkdirs();
 
