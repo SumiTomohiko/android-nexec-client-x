@@ -10,9 +10,12 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -214,6 +217,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
     private static final int REQUEST_CONFIRM = 42;
     private static final int REQUEST_HOST_PREFERENCE = 43;
     private static final String DEFAULT_HOST = "neko-daisuki.ddo.jp";
+    private static final Pattern RE_VARIABLE = Pattern.compile("\\$\\{\\w*\\}");
 
     // documents
     private NexecHost mHost;
@@ -255,15 +259,22 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         String tmpDir = String.format("%s/tmp", appDir);
         new File(tmpDir).mkdirs();
 
-        String[] args = application.getArguments();
         int width = mView.getWidth();
         int height = mView.getHeight();
-        NexecClient.Settings settings = SettingsBuilder.build(mHost.getHost(),
-                                                              mHost.getPort(),
-                                                              args, appDir,
-                                                              width, height);
-
-        mNexecClient.request(settings, REQUEST_CONFIRM);
+        try {
+            String[] args = evaluateArguments(application.getArguments(), width,
+                                              height);
+            String host = mHost.getHost();
+            int port = mHost.getPort();
+            NexecClient.Settings settings = SettingsBuilder.build(host, port,
+                                                                  args, appDir,
+                                                                  width,
+                                                                  height);
+            mNexecClient.request(settings, REQUEST_CONFIRM);
+        }
+        catch (ParseException e) {
+            ContextUtil.showException(this, "invalid argument found", e);
+        }
     }
 
     @Override
@@ -458,5 +469,35 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
         mProgressDialog.dismiss();
         showFragment(ApplicationsFragment.newInstance());
         invalidateOptionsMenu();
+    }
+
+    private String[] evaluateArguments(String[] args, int screenWidth,
+                                       int screenHeight) throws ParseException {
+        int len = args.length;
+        String[] a = new String[len];
+        for (int i = 0; i < len; i++) {
+            StringBuilder buffer = new StringBuilder();
+            String s = args[i];
+            Matcher m = RE_VARIABLE.matcher(s);
+            int position = 0;
+            while (m.find(position)) {
+                buffer.append(s.substring(position, m.start()));
+                String v = m.group();
+                if (v.equals("${screen_width}")) {
+                    buffer.append(Integer.toString(screenWidth));
+                }
+                else if (v.equals("${screen_height}")) {
+                    buffer.append(Integer.toString(screenHeight));
+                }
+                else {
+                    String fmt = "unknown variable %s";
+                    throw new ParseException(String.format(fmt, v), position);
+                }
+                position = m.end();
+            }
+            buffer.append(s.substring(position));
+            a[i] = buffer.toString();
+        }
+        return a;
     }
 }
