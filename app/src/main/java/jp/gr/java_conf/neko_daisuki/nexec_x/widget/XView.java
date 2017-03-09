@@ -35,6 +35,18 @@ public class XView extends View {
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
                                 float distanceY) {
+            if (e2.getPointerCount() == 2) {
+                mScrolling = true;
+                /*
+                 * When I move my finger to top left corner, distanceX and
+                 * distanceY are greater than zero.
+                 */
+                mOffset.x -= distanceX;
+                mOffset.y -= distanceY;
+                updateMatrix();
+                return true;
+            }
+
             xMotionNotify(e2);
             return true;
         }
@@ -51,8 +63,22 @@ public class XView extends View {
         }
     }
 
+    private static class Point {
+
+        public float x;
+        public float y;
+    }
+
     private NexecClient mClient;
     private int mScale;
+
+    /*
+     * Position of screen's top left corner. The offsets are zero or less than
+     * zero.
+     */
+    private Point mOffset = new Point();
+
+    private boolean mScrolling = false;
 
     // helpers
     private GestureDetector mGestureDetector;
@@ -83,17 +109,20 @@ public class XView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (mScrolling && (event.getActionMasked() == MotionEvent.ACTION_UP)) {
+            mScrolling = false;
+            return true;
+        }
+
         return mGestureDetector.onTouchEvent(event);
     }
 
     public void zoomIn() {
         setScale(mScale + 1);
-        postInvalidate();
     }
 
     public void zoomOut() {
         setScale(1 < mScale ? mScale - 1 : 1);
-        postInvalidate();
     }
 
     @Override
@@ -103,8 +132,7 @@ public class XView extends View {
 
     private void setScale(int scale) {
         mScale = scale;
-        mMatrix = new Matrix();
-        mMatrix.postScale(mScale, mScale);
+        updateMatrix();
     }
 
     private void initialize(Context context) {
@@ -114,8 +142,23 @@ public class XView extends View {
     }
 
     private void xMotionNotify(MotionEvent event) {
-        int x = (int)event.getX() / mScale;
-        int y = (int)event.getY() / mScale;
+        int x = (int)(event.getX() / mScale - mOffset.x);
+        int y = (int)(event.getY() / mScale - mOffset.y);
         mClient.xMotionNotify(x, y);
+    }
+
+    private void updateMatrix() {
+        adjustOffset();
+        mMatrix = new Matrix();
+        mMatrix.postTranslate(mOffset.x, mOffset.y);
+        mMatrix.postScale(mScale, mScale);
+        postInvalidate();
+    }
+
+    private void adjustOffset() {
+        mOffset.x = Math.max(Math.min(0.0f, mOffset.x),
+                             - getWidth() / mScale * (mScale - 1));
+        mOffset.y = Math.max(Math.min(0.0f, mOffset.y),
+                             - getHeight() / mScale * (mScale - 1));
     }
 }
