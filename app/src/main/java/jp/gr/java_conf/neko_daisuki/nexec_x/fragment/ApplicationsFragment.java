@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -64,9 +65,17 @@ public class ApplicationsFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = convertView != null ? convertView : makeView(position);
-            Application application = mApplications[position];
-            setText(view, R.id.caption_text, application.getCaption());
-            setText(view, R.id.description_text, application.getDescription());
+            Application app = mApplications[position];
+
+            setText(view, R.id.caption_text, app.getCaption());
+            setText(view, R.id.description_text, app.getDescription());
+
+            int viewId = R.id.screenshot_image;
+            ImageView screenshot = (ImageView)view.findViewById(viewId);
+            int id = app.isScreenshotAvailable() ? app.getScreenshotId()
+                                                 : R.drawable.ss_no_image;
+            screenshot.setImageResource(id);
+
             return view;
         }
 

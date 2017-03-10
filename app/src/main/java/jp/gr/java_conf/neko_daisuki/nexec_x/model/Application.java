@@ -14,9 +14,12 @@ public class Application {
         }
     }
 
+    private static final int NO_IMAGE = -1;
+
     private String mCaption;
     private String[] mArguments;
     private String mDescription;
+    private int mScreenshotId;
 
     public static Collection<Application> list() {
         Collection<Application> apps = new HashSet<Application>();
@@ -32,6 +35,7 @@ public class Application {
         mCaption = caption;
         mArguments = new String[] { command };
         mDescription = description;
+        mScreenshotId = NO_IMAGE;
     }
 
     public String getCaption() {
@@ -44,5 +48,13 @@ public class Application {
 
     public String getDescription() {
         return mDescription;
+    }
+
+    public boolean isScreenshotAvailable() {
+        return mScreenshotId != NO_IMAGE;
+    }
+
+    public int getScreenshotId() {
+        return mScreenshotId;
     }
 }

@@ -2,16 +2,28 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:descendantFocusability="blocksDescendants">
-    <TextView
-        android:id="@+id/caption_text"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
-    <TextView
-        android:id="@+id/description_text"
-        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1">
+        <TextView
+            android:id="@+id/caption_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+        <TextView
+            android:id="@+id/description_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dip"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/screenshot_image"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="16dip"/>
+        android:scaleType="centerCrop"/>
 </LinearLayout>
