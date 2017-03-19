@@ -23,6 +23,7 @@ public class SettingsBuilder {
         settings.addLink(rootDir, "/");
         settings.addLink(String.format("%s/usr/home", rootDir), "/home");
         settings.addLink(sdcardPath, "/usr/home/fsyscall/sdcard");
+        settings.addLink(sdcardPath, "/home/fsyscall/sdcard");
         settings.addEnvironment("DISPLAY", ":0");
         settings.addEnvironment("HOME", "/home/fsyscall");
         settings.files = new String[] {
