@@ -217,7 +217,7 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
     private static final int REQUEST_CONFIRM = 42;
     private static final int REQUEST_HOST_PREFERENCE = 43;
     private static final String DEFAULT_HOST = "neko-daisuki.ddo.jp";
-    private static final Pattern RE_VARIABLE = Pattern.compile("\\$\\{\\w*\\}");
+    private static final Pattern RE_VARIABLE = Pattern.compile("\\$\\{[^}]*\\}");
 
     // documents
     private NexecHost mHost;
