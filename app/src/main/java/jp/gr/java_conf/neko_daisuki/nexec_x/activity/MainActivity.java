@@ -39,6 +39,7 @@ import jp.gr.java_conf.neko_daisuki.android.nexec.client.util.NexecUtil;
 import jp.gr.java_conf.neko_daisuki.android.util.ActivityUtil;
 import jp.gr.java_conf.neko_daisuki.android.util.ContextUtil;
 import jp.gr.java_conf.neko_daisuki.android.util.MenuHandler;
+import jp.gr.java_conf.neko_daisuki.nexec_x.Global;
 import jp.gr.java_conf.neko_daisuki.nexec_x.R;
 import jp.gr.java_conf.neko_daisuki.nexec_x.SettingsBuilder;
 import jp.gr.java_conf.neko_daisuki.nexec_x.fragment.ApplicationsFragment;
@@ -250,13 +251,12 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
     @Override
     public void onSelected(ApplicationsFragment fragment,
                            Application application) {
-        File storage = Environment.getExternalStorageDirectory();
-        String appDir = String.format("%s/nexec", storage.getAbsolutePath());
-        String homeDir = String.format("%s/usr/home/fsyscall", appDir);
+        String physicalRootDir = Global.getPhysicalRootDirectory();
+        String homeDir = String.format("%s/usr/home/fsyscall", physicalRootDir);
         new File(homeDir).mkdirs();
         String sdcardDir = String.format("%s/sdcard", homeDir);
         new File(sdcardDir).mkdirs();
-        String tmpDir = String.format("%s/tmp", appDir);
+        String tmpDir = String.format("%s/tmp", physicalRootDir);
         new File(tmpDir).mkdirs();
 
         int width = mView.getWidth();
@@ -267,7 +267,8 @@ public class MainActivity extends FragmentActivity implements ApplicationsFragme
             String host = mHost.getHost();
             int port = mHost.getPort();
             NexecClient.Settings settings = SettingsBuilder.build(host, port,
-                                                                  args, appDir,
+                                                                  args,
+                                                                  physicalRootDir,
                                                                   width,
                                                                   height);
             mNexecClient.request(settings, REQUEST_CONFIRM);

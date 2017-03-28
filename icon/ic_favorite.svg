@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg2"
+   sodipodi:docname="ic_favorite.svg"
+   viewBox="0 0 730 730"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   width="730"
+   height="730">
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     id="base"
+     bordercolor="#666666"
+     inkscape:pageshadow="2"
+     inkscape:window-y="0"
+     fit-margin-left="0"
+     pagecolor="#ffffff"
+     fit-margin-top="0"
+     inkscape:window-maximized="0"
+     inkscape:zoom="0.93175676"
+     inkscape:window-x="0"
+     inkscape:window-height="990"
+     showgrid="false"
+     borderopacity="1.0"
+     inkscape:current-layer="layer1"
+     inkscape:cx="222.77976"
+     inkscape:cy="334.08794"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1839"
+     inkscape:pageopacity="0.0"
+     inkscape:document-units="px"
+     inkscape:snap-object-midpoints="true"
+     inkscape:snap-page="true" />
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     transform="translate(264.22,67.168002)">
+    <path
+       id="path2987"
+       style="fill:#fefe00;stroke:#000000;stroke-width:19.79136848;stroke-linejoin:round"
+       sodipodi:type="star"
+       sodipodi:sides="5"
+       sodipodi:r1="373.37997"
+       sodipodi:r2="186.68999"
+       inkscape:transform-center-y="-35.654619"
+       sodipodi:arg1="1.5707963"
+       sodipodi:arg2="2.1991149"
+       transform="scale(1,-1)"
+       inkscape:randomized="0"
+       sodipodi:cy="-333.4864"
+       sodipodi:cx="100.78"
+       inkscape:rounded="0"
+       inkscape:flatsided="false"
+       d="M 100.78001,39.893585 -8.9536289,-182.45102 l -245.3718311,-35.6546 177.552732,-173.07116 -41.914522,-244.38035 219.46726,115.38075 219.46722,-115.38076 -41.9145,244.38038 177.55273,173.07112 -245.37185,35.65463 z" />
+  </g>
+  <metadata
+     id="metadata6">
+    <rdf:RDF>
+      <cc:Work>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <cc:license
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
+        <dc:publisher>
+          <cc:Agent
+             rdf:about="http://openclipart.org/">
+            <dc:title>Openclipart</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:title>Yellow star</dc:title>
+        <dc:date>2011-10-29T19:23:04</dc:date>
+        <dc:description>A yellow star.</dc:description>
+        <dc:source>https://openclipart.org/detail/165163/yellow-star-by-lpenz</dc:source>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>lpenz</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>star</rdf:li>
+            <rdf:li>yellow</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/publicdomain/zero/1.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+</svg>

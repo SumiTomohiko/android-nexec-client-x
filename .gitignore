@@ -6,9 +6,13 @@
 /android-nexec-client-share
 /android-nexec-client-util
 /app/src/main/ic_launcher-web.png
+/app/src/main/res/drawable-*dpi/ic_favorite.png
+/app/src/main/res/drawable-*dpi/ic_file_manager.png
+/app/src/main/res/drawable-*dpi/ic_game.png
 /app/src/main/res/drawable-*dpi/ic_launcher.png
 /app/src/main/res/drawable-*dpi/ic_left_button.png
 /app/src/main/res/drawable-*dpi/ic_new_session.png
+/app/src/main/res/drawable-*dpi/ic_painting.png
 /app/src/main/res/drawable-*dpi/ic_quit_session.png
 /app/src/main/res/drawable-*dpi/ic_right_button.png
 /app/src/main/res/drawable-*dpi/ic_zoom_in.png
